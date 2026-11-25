@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Counterpoint · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../frontier.css">
+</head>
+<body class="room theme-counterpoint">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Other experiments">
+      <a href="../descent/">← Descent</a>
+      <a href="../gravity/">Gravity →</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Counterpoint</h1>
+      <p>Select words from each witness, or pair the example. The two fragments become the evidence for one question.</p>
+    </header>
+    <div class="controls counter-controls">
+      <button class="control primary" id="counter-example" type="button">Pair an example</button>
+      <button class="control" id="counter-reset" type="button" disabled>Clear pair</button>
+      <a class="control" id="counter-jump" href="#counter-result" hidden>Go to the pair ↓</a>
+      <output class="engine micro" id="counter-status" role="status">Choose a fragment from each witness</output>
+    </div>
+    <div class="instrument counter-stage">
+      <section class="witness" aria-labelledby="witness-a-label">
+        <h2 class="micro" id="witness-a-label">The passenger</h2>
+        <p id="witness-a">I reached the platform at midnight. The display was blank. Nobody else was there.</p>
+        <div class="choice" aria-label="Select a passenger quote">
+          <button class="control" type="button" data-witness="a" data-quote="Nobody else was there">Nobody else</button>
+          <button class="control" type="button" data-witness="a" data-quote="The display was blank">The display</button>
+        </div>
+      </section>
+      <section class="witness" aria-labelledby="witness-b-label">
+        <h2 class="micro" id="witness-b-label">The cleaner</h2>
+        <p id="witness-b">I was cleaning the platform from eleven to one. I saw someone waiting under the clock.</p>
+        <div class="choice" aria-label="Select a cleaner quote">
+          <button class="control" type="button" data-witness="b" data-quote="I was cleaning the platform">Cleaning</button>
+          <button class="control" type="button" data-witness="b" data-quote="I saw someone waiting under the clock">The clock</button>
+        </div>
+      </section>
+      <section class="counter-result" id="counter-result" aria-labelledby="evidence-label">
+        <h2 class="micro" id="evidence-label" tabindex="-1">The pair</h2>
+        <div class="paired-quotes">
+          <blockquote id="quote-a" tabindex="-1">Choose a passenger fragment.</blockquote>
+          <blockquote id="quote-b" tabindex="-1">Choose a cleaner fragment.</blockquote>
+        </div>
+        <p class="counter-question" id="counter-question" role="status" hidden></p>
+        <div class="counter-model">
+          <button class="control" type="button" id="counter-ask" disabled>Ask on this device</button>
+          <output class="micro" id="counter-model-status">Checking for an on-device model</output>
+        </div>
+      </section>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>CSS Custom Highlights mark the exact selected ranges in both accounts. Supported browsers can hit-test a marked range and jump to its quotation. The experiment includes written questions and can optionally ask a browser-provided on-device language model for another, using just the selected fragments. The browser may need to download a model after you choose the download button. <a href="https://developer.mozilla.org/en-US/docs/Web/API/HighlightRegistry/highlightsFromPoint">Highlight hit-testing</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/API/LanguageModel/availability_static">Prompt API availability</a></p>
+    </details>
+  </main>
+  <script type="module" src="../counterpoint.js"></script>
+</body>
+</html>

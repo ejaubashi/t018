@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Descent · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../frontier.css">
+</head>
+<body class="room theme-descent">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Other experiments">
+      <a href="../frequency/">← Frequency</a>
+      <a href="../counterpoint/">Counterpoint →</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Descent</h1>
+      <p>Open an underlined phrase. It becomes the heading of the next reading. Use Back to retrace your route.</p>
+    </header>
+    <article class="instrument descent-stage" id="descent-stage">
+      <h2 id="descent-title" tabindex="-1">The door</h2>
+      <p id="descent-copy">A room has two sides. The side you’re on decides what <a href="?chapter=hinge" data-chapter="hinge">the hinge</a> means. <a href="?chapter=threshold" data-chapter="threshold">The threshold</a> can be a line or a place to wait.</p>
+    </article>
+    <nav class="controls" aria-label="Reading controls">
+      <button class="control" type="button" id="descent-back" disabled>← Previous reading</button>
+      <a class="control" href="?chapter=door" data-chapter="door">Start at the door</a>
+      <output class="micro engine" id="descent-status">Reading The door</output>
+    </nav>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>Each reading has an address. The Navigation API intercepts chapter links and keeps browser Back and Forward intact. A named View Transition carries the chosen phrase into the next heading. History-based navigation and immediate layout changes cover browsers with older APIs. <a href="https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept">Navigation interception</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/startViewTransition">Scoped View Transitions</a></p>
+    </details>
+  </main>
+  <script type="module" src="../descent.js"></script>
+</body>
+</html>

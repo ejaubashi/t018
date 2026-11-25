@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Cast · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../frontier.css">
+</head>
+<body class="room theme-cast">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Other experiments">
+      <a href="../exchange/">← Exchange</a>
+      <a href="../frequency/">Frequency →</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Cast</h1>
+      <p>Slide the controls to redraw the letters, type your own specimen, then download the font.</p>
+    </header>
+    <div class="instrument cast-stage">
+      <p id="cast-specimen" aria-label="Font specimen">FORM<br>IN FLUX.</p>
+    </div>
+    <div class="controls cast-controls">
+      <label class="text-control"><span class="micro">Specimen</span><input type="text" id="cast-text" value="FORM IN FLUX." maxlength="48" spellcheck="false"></label>
+      <label class="range-control" for="cast-weight"><span class="micro">Ink</span><input id="cast-weight" type="range" min="44" max="118" value="94"></label>
+      <label class="range-control" for="cast-round"><span class="micro">Round</span><input id="cast-round" type="range" min="0" max="100" value="32"></label>
+      <label class="range-control" for="cast-slant"><span class="micro">Lean</span><input id="cast-slant" type="range" min="-22" max="22" value="0"></label>
+      <button class="control primary" id="cast-download" type="button" disabled>Download .ttf</button>
+      <output class="engine micro" id="cast-status" role="status">Building font</output>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>A contour generator redraws A–Z, 0–9, spaces, and punctuation. A browser-side encoder writes a TrueType font with its own outlines, metrics, character map, and checksums. The <code>FontFace</code> API loads those bytes as the specimen changes. You can download the current font and use it in another tool. <a href="https://developer.mozilla.org/en-US/docs/Web/API/FontFace">FontFace</a> · <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/otff">OpenType font format</a></p>
+    </details>
+  </main>
+  <script type="module" src="../cast.js"></script>
+</body>
+</html>
