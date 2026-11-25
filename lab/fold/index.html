@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Fold · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+</head>
+<body class="room theme-fold">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Text experiments">
+      <a href="../gravity/">Gravity</a>
+      <a href="../fold/" aria-current="page">Fold</a>
+      <a href="../underprint/">Underprint</a>
+      <a href="../echo/">Echo</a>
+      <a href="../exchange/">Exchange</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Fold</h1>
+      <p>Scroll the sentence to turn four lines into a different reading.</p>
+    </header>
+    <div class="instrument fold-scroll" id="fold-scroll" tabindex="0" aria-label="Scroll to turn the sentence">
+      <div class="fold-depth">
+        <div class="fold-sticky" aria-hidden="true">
+          <div class="fold-flap" style="--start: 0%; --end: 52%">
+            <span class="fold-face">I remember</span><span class="fold-face reverse">The city</span>
+          </div>
+          <div class="fold-flap" style="--start: 16%; --end: 68%">
+            <span class="fold-face">the city</span><span class="fold-face reverse">remembers</span>
+          </div>
+          <div class="fold-flap" style="--start: 32%; --end: 84%">
+            <span class="fold-face">the way</span><span class="fold-face reverse">the way</span>
+          </div>
+          <div class="fold-flap" style="--start: 48%; --end: 100%">
+            <span class="fold-face">it was.</span><span class="fold-face reverse">I was.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="sr-only" id="fold-reading" role="status">I remember the city the way it was.</p>
+    <div class="controls">
+      <label class="range-control" for="fold-angle"><span class="micro">Fold position</span><input id="fold-angle" type="range" min="0" max="100" value="0"></label>
+      <button class="control" id="fold-turn" type="button">Turn the sentence</button>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>A CSS scroll timeline drives four 3D text panels through staggered ranges. The slider and button move the same scroller as a finger or wheel. A scroll listener supplies the rotation on browsers without timelines. Reduced motion switches between the two readings at the midpoint. <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/animation-timeline/scroll">Scroll timelines</a></p>
+    </details>
+  </main>
+  <script type="module" src="../fold.js"></script>
+</body>
+</html>

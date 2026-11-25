@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Underprint · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+</head>
+<body class="room theme-underprint">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Text experiments">
+      <a href="../gravity/">Gravity</a>
+      <a href="../fold/">Fold</a>
+      <a href="../underprint/" aria-current="page">Underprint</a>
+      <a href="../echo/">Echo</a>
+      <a href="../exchange/">Exchange</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Underprint</h1>
+      <p>Sweep a lens across a sentence to find the one underneath.</p>
+    </header>
+    <div class="instrument underprint-stage" id="underprint-stage" tabindex="0" role="group" aria-label="Underprint lens. Move with the arrow keys.">
+      <p class="underprint-copy" id="surface-copy"><span>I LEFT</span> <span>THE ROOM</span> <span>EMPTY.</span></p>
+      <p class="underprint-copy underprint-window" id="hidden-copy" aria-hidden="true"><span>YOU LEFT</span> <span>THIS ROOM</span> <span>IN ME.</span></p>
+    </div>
+    <div class="controls">
+      <button class="control primary" id="reveal" type="button" aria-pressed="false">Reveal whole underprint</button>
+      <label class="range-control" for="lens-radius"><span class="micro">Lens size</span><input id="lens-radius" type="range" min="12" max="38" value="22"></label>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>Two passages share a grid. Registered CSS properties carry the lens position into a live, six-sided <code>shape()</code> clip. Older browsers use an ellipse. The reveal button lets keyboard and screen-reader users read either passage in full. <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/basic-shape/shape">CSS <code>shape()</code></a></p>
+    </details>
+  </main>
+  <script type="module" src="../underprint.js"></script>
+</body>
+</html>

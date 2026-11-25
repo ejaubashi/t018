@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Gravity · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+</head>
+<body class="room theme-gravity">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Text experiments">
+      <a href="../gravity/" aria-current="page">Gravity</a>
+      <a href="../fold/">Fold</a>
+      <a href="../underprint/">Underprint</a>
+      <a href="../echo/">Echo</a>
+      <a href="../exchange/">Exchange</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Gravity</h1>
+      <p>Hold the text to pull its letters. Release and watch them find their places.</p>
+    </header>
+    <div class="instrument gravity-stage" id="gravity-stage" role="group" aria-label="Words fall. Meaning holds.">
+      <p class="gravity-print">WORDS FALL.<br>MEANING<br>HOLDS.</p>
+    </div>
+    <div class="controls" aria-label="Gravity controls">
+      <button class="control primary" id="pulse" type="button">Send a pulse</button>
+      <div class="choice" role="group" aria-label="Force direction">
+        <button class="control" type="button" data-force="pull" aria-pressed="true">Pull</button>
+        <button class="control" type="button" data-force="push" aria-pressed="false">Push</button>
+      </div>
+      <output class="engine micro" id="gravity-engine">CPU physics</output>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>A WebGPU compute shader updates the displacement and velocity of each glyph. A JavaScript solver uses the same spring model on devices without a usable GPU adapter. The browser still shapes and draws the letters as DOM text. The engine label reports which path ran. <a href="https://developer.mozilla.org/en-US/docs/Web/API/GPU">WebGPU reference</a></p>
+    </details>
+  </main>
+  <script type="module" src="../gravity.js"></script>
+</body>
+</html>

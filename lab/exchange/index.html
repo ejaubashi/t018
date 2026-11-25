@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Exchange · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+</head>
+<body class="room theme-exchange">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Text experiments">
+      <a href="../gravity/">Gravity</a>
+      <a href="../fold/">Fold</a>
+      <a href="../underprint/">Underprint</a>
+      <a href="../echo/">Echo</a>
+      <a href="../exchange/" aria-current="page">Exchange</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Exchange</h1>
+      <p>Give a different word the lead and watch the sentence reorganize.</p>
+    </header>
+    <div class="instrument exchange-stage" id="exchange-stage" data-voice="we" aria-hidden="true">
+      <span class="exchange-word" id="people-word" data-role="actor">WE</span>
+      <span class="exchange-word" id="verb-word" data-role="verb">REMEMBER</span>
+      <span class="exchange-word" id="city-word" data-role="object">THE CITY.</span>
+    </div>
+    <p id="exchange-reading" class="sr-only" role="status">We remember the city.</p>
+    <div class="controls">
+      <span class="micro">Who acts</span>
+      <div class="choice" role="group" aria-label="Who acts">
+        <button class="control" data-voice-choice="we" type="button" aria-pressed="true">We</button>
+        <button class="control" data-voice-choice="city" type="button" aria-pressed="false">The city</button>
+        <button class="control" data-voice-choice="none" type="button" aria-pressed="false">Unstated</button>
+      </div>
+      <button class="control primary" id="swap-voice" type="button">Exchange roles</button>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>Each phrase keeps a transition name as it changes role, grammar, and position. Chromium can scope the View Transition to the sentence. The document API takes over where available, and direct layout changes preserve the readings everywhere else. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/startViewTransition">Element-scoped View Transitions</a></p>
+    </details>
+  </main>
+  <script type="module" src="../exchange.js"></script>
+</body>
+</html>

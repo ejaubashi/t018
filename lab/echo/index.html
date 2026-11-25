@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Echo · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+</head>
+<body class="room theme-echo">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Text experiments">
+      <a href="../gravity/">Gravity</a>
+      <a href="../fold/">Fold</a>
+      <a href="../underprint/">Underprint</a>
+      <a href="../echo/" aria-current="page">Echo</a>
+      <a href="../exchange/">Exchange</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Echo</h1>
+      <p>Type a line, erase something, and replay the traces of your edits.</p>
+    </header>
+    <div class="instrument echo-stage" id="echo-stage" aria-hidden="true">
+      <div id="ghosts" class="ghosts"></div>
+      <p id="echo-current" class="echo-current">Your words go here.</p>
+      <p id="echo-deleted" class="echo-deleted" hidden></p>
+    </div>
+    <div class="controls echo-controls">
+      <div class="echo-input">
+        <label class="micro" for="echo-input">Your line</label>
+        <textarea id="echo-input" rows="2" placeholder="I almost said stay." spellcheck="false"></textarea>
+      </div>
+      <div class="choice">
+        <button class="control primary" type="button" id="echo-play" disabled>Replay typing</button>
+        <button class="control" type="button" id="echo-example">Play example</button>
+        <button class="control" type="button" id="echo-clear" disabled>Clear</button>
+      </div>
+      <output id="echo-status" class="micro engine" role="status">Waiting for a line</output>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>Native input events record committed edits and their timing. <code>Intl.Segmenter</code> keeps grapheme clusters together when a deletion leaves an afterimage. An ordered tape replays edits and pauses. Recordings longer than eight seconds are compressed for playback. CSS <code>sibling-index()</code> positions the recent traces, with index values as a fallback. <a href="https://developer.mozilla.org/en-US/docs/Web/API/InputEvent/inputType">InputEvent</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/sibling-index">Sibling index</a></p>
+    </details>
+  </main>
+  <script type="module" src="../echo.js"></script>
+</body>
+</html>
