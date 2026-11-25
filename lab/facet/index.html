@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Facet · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../studies.css">
+</head>
+<body class="room theme-facet">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Other experiments">
+      <a href="../relay/">← Relay</a>
+      <a href="../cast/">Cast →</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Facet</h1>
+      <p>Drag across the print or set a viewing angle. Turn all the way to either side to read a different sentence.</p>
+    </header>
+    <div class="controls facet-controls" id="facet-controls" hidden>
+      <div class="choice" role="group" aria-label="Viewing angle presets">
+        <button class="control" type="button" data-angle="-45" aria-pressed="false">First reading</button>
+        <button class="control" type="button" data-angle="0" aria-pressed="false">Overlap</button>
+        <button class="control" type="button" data-angle="45" aria-pressed="false">Second reading</button>
+      </div>
+      <button class="control primary" type="button" id="facet-sweep">Sweep both readings</button>
+    </div>
+    <div class="instrument facet-stage" id="facet-stage" role="group" aria-label="Optical text print" aria-describedby="facet-reading">
+      <div class="facet-optic">
+        <div class="facet-scene" id="facet-scene" aria-hidden="true"></div>
+      </div>
+      <p class="facet-fallback" id="facet-fallback">I stayed to listen. I left to speak.</p>
+    </div>
+    <div class="controls facet-axis" id="facet-axis" hidden>
+      <label class="range-control" for="facet-angle">
+        <span class="micro">Viewing angle</span>
+        <input id="facet-angle" type="range" min="-45" max="45" step="0.5" value="-17">
+      </label>
+      <output class="micro facet-degree" id="facet-degrees" for="facet-angle" aria-hidden="true">−17.0°</output>
+      <p class="engine micro" id="facet-reading" role="status">Both readings overlap</p>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>Each of the 24 ridges has one face at −45° and one at +45°. Each face shows a slice of a full text layout. An orthographic projection aligns the slices at the endpoints. A registered CSS angle animates the rotation, and <code>sibling-index()</code> positions the ridges where supported. The angle control works in half-degree steps. <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@property">Registered CSS properties</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/sibling-index">Sibling index</a></p>
+    </details>
+  </main>
+  <script type="module" src="../facet.js"></script>
+</body>
+</html>

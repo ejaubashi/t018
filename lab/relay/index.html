@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Relay · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../studies.css">
+</head>
+<body class="room theme-relay">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Other experiments">
+      <a href="../exchange/">← Exchange</a>
+      <a href="../facet/">Facet →</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Relay</h1>
+      <p>Select or drag words to compose two readings. Open a second window to see both update as you work.</p>
+    </header>
+    <div class="relay-bar">
+      <div class="choice" id="relay-windows" hidden>
+        <a class="control" href="?view=first" target="_blank" rel="noopener">First window ↗</a>
+        <a class="control primary" href="?view=second" target="_blank" rel="noopener">Second window ↗</a>
+        <a class="control" href="./" id="relay-both" hidden>Show both</a>
+      </div>
+      <p class="micro" id="relay-revision">Opening the reading</p>
+    </div>
+    <div class="instrument relay-stage" id="relay-stage">
+      <section class="relay-reading" data-reading="first" aria-labelledby="relay-first">
+        <header>
+          <h2 class="micro" id="relay-first">First reading</h2>
+          <span class="micro relay-count"></span>
+        </header>
+        <p class="relay-words">I thought the city had forgotten me.</p>
+      </section>
+      <section class="relay-reading" data-reading="second" aria-labelledby="relay-second">
+        <header>
+          <h2 class="micro" id="relay-second">Second reading</h2>
+          <span class="micro relay-count"></span>
+        </header>
+        <p class="relay-words">It was only waiting.</p>
+      </section>
+    </div>
+    <form class="controls relay-form" id="relay-form" hidden>
+      <label><span class="micro">Move to</span>
+        <select id="relay-destination">
+          <option value="first">First reading</option>
+          <option value="second" selected>Second reading</option>
+        </select>
+      </label>
+      <label><span class="micro">Position</span><select id="relay-position"></select></label>
+      <button class="control primary" type="submit" id="relay-move" disabled>Move selection</button>
+      <output class="micro engine" id="relay-selection" role="status">Select words to move</output>
+    </form>
+    <section class="relay-log" aria-labelledby="relay-log-title">
+      <header>
+        <h2 class="micro" id="relay-log-title">Recent moves</h2>
+        <div class="choice">
+          <button class="control" id="relay-undo" type="button" disabled>Undo last move</button>
+          <button class="control" id="relay-reset" type="button" disabled>Restore opening words</button>
+        </div>
+      </header>
+      <p id="relay-notice" role="status" class="micro"></p>
+      <ol id="relay-events"></ol>
+    </section>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>Each word has a stable identity. IndexedDB commits moves and undo operations in transactions. BroadcastChannel tells other windows to read the new revision. Named View Transitions move the words between readings inside each window. Open both windows in the same browser profile to work on the same text. <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase/transaction">IndexedDB transactions</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel">BroadcastChannel</a></p>
+    </details>
+  </main>
+  <script type="module" src="../relay.js"></script>
+</body>
+</html>
