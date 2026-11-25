@@ -3,305 +3,717 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191318">
   <link rel="icon" href="data:,">
   <title>What Was Left Out</title>
   <style>
     :root {
-      color-scheme: light;
-      --paper: #f5eee2;
-      --ink: #261d18;
-      --red: #9d2926;
-      --muted: #655951;
-      --rule: #a89a8b;
+      color-scheme: dark;
+      --ink: #191318;
+      --record: #271b23;
+      --paper: #f8ecdd;
+      --muted: #c9b7aa;
+      --red: #ff9b84;
+      --rule: #6c575f;
       --mono: ui-monospace, "Courier New", monospace;
-      background: var(--paper);
-      color: var(--ink);
+      background: var(--ink);
+      color: var(--paper);
       font: 1rem/1.5 Georgia, serif;
     }
-    * { box-sizing: border-box; }
-    body { margin: 0; }
-    main { width: min(74rem, calc(100% - clamp(2.5rem, 10vw, 9rem))); margin: 0 auto; padding: 3rem 0 5rem; }
-    h1, h2, p, ol { margin: 0; }
-    .label { font: 0.78rem/1.5 var(--mono); letter-spacing: 0.065em; text-transform: uppercase; }
-    header .label { color: var(--red); }
-    h1 { font-size: clamp(3rem, 9.25vw, 8.2rem); line-height: 0.93; letter-spacing: -0.053em; margin: 0.2em 0 0.2em; }
-    header > p:last-child { max-width: 46ch; font-size: clamp(1rem, 2vw, 1.25rem); }
-    .sheet { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: clamp(1.4rem, 4vw, 4rem); margin-top: clamp(2.5rem, 6vw, 5.25rem); }
-    section { border-top: 1px solid var(--rule); padding-top: 0.8rem; min-width: 0; }
-    .toolbar { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 0.9rem 0 0; }
-    button, select, summary { font: 0.82rem/1.4 var(--mono); color: var(--ink); }
-    button, select { background: transparent; border: 1px solid var(--rule); border-radius: 0; padding: 0.48rem 0.65rem; }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body, h1, h2, p, ol, blockquote { margin: 0; }
+    a { color: inherit; text-underline-offset: 0.25em; }
+    a:hover { color: var(--red); }
+    button, select, summary, input { font: 0.8rem/1.4 var(--mono); }
     button, summary { cursor: pointer; }
-    button:hover:not(:disabled), button[aria-pressed="true"] { border-color: var(--red); color: var(--red); }
-    button:disabled, select:disabled { opacity: 0.55; cursor: default; }
-    :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
-    .cut { color: var(--paper); background: var(--red); border-color: var(--red); }
-    .cut:hover:not(:disabled) { color: var(--paper); background: #79201d; }
-    details { margin: 0.8rem 0; }
-    summary { width: fit-content; }
-    .word-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; padding-top: 0.65rem; }
-    .word-controls label { display: grid; gap: 0.25rem; font: 0.76rem/1.4 var(--mono); }
-    .reading { padding-block: clamp(1.1rem, 3vw, 2.5rem); min-height: 9rem; }
-    #passage {
-      font-size: clamp(1.95rem, 4.35vw, 4rem);
-      line-height: 1.09;
-      letter-spacing: -0.042em;
-      text-wrap: pretty;
-      view-transition-name: testimony;
-    }
-    ::view-transition-group(testimony) { animation-duration: 240ms; }
-    ::selection { background: #f7c2ac; color: var(--ink); }
-    ::highlight(pending) { background-color: #f7c2ac; color: var(--ink); }
-    ::highlight(omission) { background-color: #f7d4c7; color: var(--red); text-decoration: line-through; }
-    .empty { color: var(--muted); }
-    #record { display: grid; gap: 0.8rem; list-style: none; padding: 0; margin-top: 0.9rem; }
-    #record li { display: flex; align-items: baseline; justify-content: space-between; gap: 0.7rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--rule); }
-    #record q { color: var(--red); font-size: 1.15rem; overflow-wrap: anywhere; }
-    #record button { flex: none; }
-    #record-empty { margin-top: 0.9rem; }
-    #status { min-height: 2.4em; margin-top: 0.45rem; color: var(--muted); font: 0.78rem/1.5 var(--mono); }
+    button:disabled { cursor: default; }
+    :focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
     [hidden] { display: none !important; }
-    @media (max-width: 42rem) {
-      main { padding-top: 2rem; }
-      .sheet { grid-template-columns: 1fr; }
-      .reading { min-height: 0; }
+    ::selection { background-color: #ffd1be; color: var(--ink); }
+    ::highlight(omission) { background-color: #592f3b; color: #ffd4c5; text-decoration: line-through; }
+    ::highlight(inspection) { background-color: #ff9b84; color: #191318; text-decoration: line-through; }
+
+    main {
+      width: min(79rem, calc(100% - clamp(2.5rem, 10vw, 9rem)));
+      margin-inline: auto;
+      padding-bottom: 3rem;
+    }
+
+    .label {
+      font: 0.76rem/1.4 var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .masthead {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.25rem;
+      border-bottom: 1px solid var(--rule);
+      padding: 1.1rem 0;
+      color: var(--muted);
+    }
+
+    .masthead a { color: var(--paper); }
+    .masthead a:hover { color: var(--red); }
+    .intro { padding: clamp(1.65rem, 5vw, 4.25rem) 0 clamp(1.35rem, 3.5vw, 2.75rem); }
+
+    h1 {
+      font-size: clamp(3.05rem, 7.7vw, 8rem);
+      letter-spacing: -0.062em;
+      line-height: 0.93;
+      text-wrap: balance;
+    }
+
+    .intro p {
+      max-width: 54ch;
+      margin-top: 0.85rem;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.7vw, 1.19rem);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem 0.8rem;
+      padding-bottom: 0.85rem;
+    }
+
+    .control {
+      border: 1px solid var(--rule);
+      background: transparent;
+      color: var(--paper);
+      min-height: 2.45rem;
+      padding: 0.35rem 0.65rem;
+    }
+
+    .control:hover:not(:disabled), .control[aria-pressed="true"] { border-color: var(--red); color: var(--red); }
+    .control:disabled { color: var(--muted); opacity: 0.69; }
+    .control.cut { background: var(--red); color: var(--ink); border-color: var(--red); }
+    .control.cut:hover:not(:disabled) { background: #ffc1ae; color: var(--ink); }
+    .control.cut:disabled { background: transparent; color: var(--muted); border-color: var(--rule); }
+
+    .chooser { flex-basis: 100%; }
+    .chooser summary, .method summary { width: fit-content; color: var(--muted); }
+    .chooser summary:hover, .method summary:hover { color: var(--red); }
+    .word-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; padding-top: 0.55rem; }
+    .word-controls label { display: grid; gap: 0.22rem; font: 0.76rem/1.4 var(--mono); }
+    .word-controls select { max-width: 100%; font-size: 0.86rem; background: var(--ink); }
+
+    .edition {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 2.35fr) minmax(14rem, 1fr);
+      border-block: 1px solid var(--rule);
+    }
+
+    .statement, .margin { min-width: 0; padding: clamp(1rem, 2.45vw, 2rem); }
+    .statement { padding-inline-start: 0; }
+
+    .margin {
+      background: var(--record);
+      border-inline-start: 1px dashed var(--rule);
+      min-height: 9.5rem;
+      transition: background-color 180ms ease, border-color 180ms ease;
+    }
+
+    .margin[data-drop="ready"] { background: #4e292f; border-color: var(--red); }
+    .margin[data-drop="waiting"] { border-color: var(--red); }
+    .edition .label { color: var(--red); }
+
+    #passage {
+      margin-top: 0.62em;
+      font-size: clamp(2rem, 4.7vw, 4.9rem);
+      line-height: 1.1;
+      letter-spacing: -0.052em;
+      overflow-wrap: anywhere;
+    }
+    #passage[data-inspecting] { cursor: pointer; }
+
+    .flow-word {
+      position: relative;
+      display: inline-block;
+      view-transition-class: word;
+    }
+
+    .flow-word[data-flying] {
+      z-index: 2;
+      view-transition-class: word transfer;
+    }
+
+    .cut-target {
+      appearance: none;
+      border: 0;
+      border-bottom: 0.06em solid;
+      background: transparent;
+      color: var(--red);
+      cursor: grab;
+      touch-action: none;
+      font: inherit;
+      font-style: italic;
+      letter-spacing: inherit;
+      padding: 0 0.05em;
+      line-height: 0.88;
+      transition: color 170ms ease, background-color 170ms ease;
+    }
+
+    .cut-target:hover, .cut-target:focus-visible { background: var(--red); color: var(--ink); }
+    .cut-target[data-dragging] {
+      cursor: grabbing;
+      z-index: 3;
+      background: var(--red);
+      color: var(--ink);
+    }
+
+    .cut-target[data-arrival] { animation: draw-attention 780ms cubic-bezier(0.19, 1, 0.22, 1) 220ms both; }
+    @keyframes draw-attention {
+      0%, 100% { translate: 0 0; }
+      45% { translate: 0 -0.12em; background: var(--red); color: var(--ink); }
+    }
+
+    .flow-word[data-selected] { background: #ffe0cd; color: var(--ink); }
+    #record-empty { color: var(--muted); margin-top: 0.95rem; }
+
+    #record {
+      display: grid;
+      gap: 0.75rem;
+      list-style: none;
+      padding: 0;
+      margin-top: 0.85rem;
+    }
+
+    #record li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.75rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    #record li:focus-within, #record li[data-linked] { border-bottom-color: var(--red); }
+    #record li[data-linked] .control { color: var(--red); border-color: var(--red); }
+    #record q { color: var(--red); font-size: clamp(1.6rem, 3.2vw, 3.15rem); line-height: 1.13; overflow-wrap: anywhere; }
+    #record q::before, #record q::after { font-size: 0.77em; }
+    #record .control { min-height: 2.15rem; flex: none; }
+
+    .timeline { padding-block: 0.9rem; border-bottom: 1px solid var(--rule); }
+    .timeline-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.4rem 0.85rem; }
+    .timeline-heading label { flex: 1 0 auto; }
+    .timeline output { color: var(--red); }
+    .timeline .control { min-height: 2.15rem; }
+    .timeline input { display: block; width: 100%; min-height: 1.8rem; accent-color: var(--red); margin: 0.45rem 0 0; cursor: ew-resize; }
+
+    #status { margin-top: 0.7rem; min-height: 1.5em; color: var(--muted); font: 0.8rem/1.55 var(--mono); }
+    .empty { color: var(--muted); }
+    .method { margin-top: 1.15rem; }
+    .method p { max-width: 72ch; margin-top: 0.5rem; color: var(--muted); }
+
+    ::view-transition { pointer-events: none; }
+    ::view-transition-old(root) { display: none; }
+    ::view-transition-new(root), ::view-transition-group(root) { animation: none; }
+    ::view-transition-group(*) { animation-duration: 440ms; animation-timing-function: cubic-bezier(0.21, 0.68, 0.18, 1); }
+    ::view-transition-group(.transfer) { animation-duration: 880ms; z-index: 3; }
+    ::view-transition-image-pair(.transfer) { animation: flight 880ms ease-in-out; overflow: visible; }
+
+    @keyframes flight {
+      0%, 100% { translate: 0 0; rotate: 0deg; }
+      46% { translate: 0 -2.65rem; rotate: -7deg; }
+    }
+
+    @media (max-width: 45rem) {
+      .edition { grid-template-columns: minmax(0, 1fr); }
+      .statement { padding-inline-end: 0; }
+      .margin { border-inline-start: 0; border-block-start: 1px dashed var(--rule); min-height: 6.35rem; }
+      #passage { margin-top: 0.43em; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+      .cut-target[data-arrival] { animation: none; }
     }
   </style>
 </head>
 <body>
   <main>
-    <header>
-      <p class="label">An experiment in fictional testimony</p>
+    <nav class="masthead label" aria-label="Project">
+      <a href="../">← Typefield</a>
+      <span>Fictional testimony</span>
+    </nav>
+    <header class="intro">
       <h1>What was left out.</h1>
-      <p>Select words in the statement and cut them. Each cut becomes a quotation you can put back.</p>
+      <p id="directions" hidden>Tap the underlined word or drag it into the margin. Select a longer phrase to cut it. Every cut can fly back into the statement.</p>
     </header>
-    <div class="sheet">
-      <section aria-labelledby="statement-label">
+
+    <div class="controls" id="controls" hidden>
+      <button class="control cut" id="cut" type="button" disabled>Cut selection</button>
+      <button class="control" id="compare" type="button" aria-pressed="false" disabled>Compare original</button>
+      <details class="chooser" id="choose-words">
+        <summary>Choose words by position</summary>
+        <div class="word-controls">
+          <label>From <select class="control" id="first-word"></select></label>
+          <label>Through <select class="control" id="last-word"></select></label>
+        </div>
+      </details>
+    </div>
+
+    <div class="edition" id="edition">
+      <section class="statement" aria-labelledby="statement-label">
         <h2 id="statement-label" class="label">Statement</h2>
-        <div class="toolbar" hidden>
-          <button class="cut" id="cut" type="button" disabled>Cut selection</button>
-          <button id="try-cut" type="button">Cut “not”</button>
-          <button id="compare" type="button" aria-pressed="false" disabled>Compare original</button>
-        </div>
-        <details id="choose-words" hidden>
-          <summary>Choose words by position</summary>
-          <div class="word-controls">
-            <label>From <select id="first-word"></select></label>
-            <label>Through <select id="last-word"></select></label>
-          </div>
-        </details>
-        <div class="reading">
-          <p id="passage">I did not hear anyone call from the water. By dawn I had signed the report.</p>
-        </div>
-        <p id="status" role="status"></p>
+        <p id="passage">I did not hear anyone call from the water. By dawn I had signed the report.</p>
       </section>
-      <section aria-labelledby="record-label">
-        <h2 id="record-label" class="label">Record of omissions</h2>
-        <p id="record-empty" class="empty">Words you cut appear here.</p>
+      <section class="margin" id="margin" aria-labelledby="record-label">
+        <h2 id="record-label" class="label">Margin of omissions</h2>
+        <p id="record-empty">The words you cut land here.</p>
         <ol id="record"></ol>
       </section>
     </div>
+
+    <div class="timeline" id="timeline" hidden>
+      <div class="timeline-heading label">
+        <label for="revision">Scrub through edits</label>
+        <output for="revision" id="revision-label" aria-hidden="true">Original</output>
+        <button class="control" id="replay" type="button">Replay last edit</button>
+      </div>
+      <input type="range" id="revision" min="0" max="0" value="0">
+    </div>
+    <p id="status" role="status"></p>
+
+    <details class="method">
+      <summary>What’s the browser doing?</summary>
+      <p>Element-scoped View Transitions match each travelling word between the statement and the margin while the rest of the text reflows. Compare mode uses native highlight hit-testing to link an exact phrase in the intact original to its record.</p>
+    </details>
   </main>
   <script>
+    const edition = document.querySelector("#edition");
     const passage = document.querySelector("#passage");
-    const reading = document.querySelector(".reading");
-    const toolbar = document.querySelector(".toolbar");
-    const cutButton = document.querySelector("#cut");
-    const sampleButton = document.querySelector("#try-cut");
-    const compareButton = document.querySelector("#compare");
-    const wordControls = document.querySelector("#choose-words");
-    const firstWord = document.querySelector("#first-word");
-    const lastWord = document.querySelector("#last-word");
+    const margin = document.querySelector("#margin");
     const record = document.querySelector("#record");
     const recordEmpty = document.querySelector("#record-empty");
+    const cutButton = document.querySelector("#cut");
+    const compareButton = document.querySelector("#compare");
+    const chooser = document.querySelector("#choose-words");
+    const firstWord = document.querySelector("#first-word");
+    const lastWord = document.querySelector("#last-word");
+    const timeline = document.querySelector("#timeline");
+    const revision = document.querySelector("#revision");
+    const revisionLabel = document.querySelector("#revision-label");
+    const replayButton = document.querySelector("#replay");
+    const statementLabel = document.querySelector("#statement-label");
     const status = document.querySelector("#status");
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
     const highlights = typeof Highlight === "function" ? CSS.highlights : null;
-
-    const words = Array.from(passage.textContent.matchAll(/\S+/g), (match, id) => ({
+    const source = passage.textContent;
+    const words = Array.from(source.matchAll(/\S+/g), (match, id) => ({
       id,
       text: match[0],
       start: match.index,
       end: match.index + match[0].length,
     }));
-    const sample = words.find(word => word.text === "not");
-    const cuts = [];
+    const targetWord = words.find(word => word.text === "not");
+    const revisions = [{ cuts: [], message: "Original statement." }];
     const ownedRanges = new Map();
-    let nextCutId = 1;
-    let visibleWords = words;
-    let selectedWords = [];
+    let position = 0;
     let comparing = false;
+    let selected = [];
+    let visibleWords = words;
+    let nextCutId = 1;
     let transition;
+    let renderVersion = 0;
+    let drag;
+    let suppressClick = false;
+    let inspectedCut;
 
-    function rangeFor(start, end) {
-      const range = document.createRange();
-      range.setStart(passage.firstChild, start);
-      range.setEnd(passage.firstChild, end);
-      return range;
+    function inHistory() {
+      return position !== revisions.length - 1;
     }
 
-    function paintSelection() {
-      cutButton.disabled = comparing || !selectedWords.length;
-      if (!highlights) return;
-      if (!cutButton.disabled) {
-        const range = rangeFor(selectedWords[0].start, selectedWords.at(-1).end);
-        highlights.set("pending", new Highlight(range));
-      } else {
-        highlights.delete("pending");
+    function quote(ids) {
+      return ids.map(id => words[id].text).join(" ");
+    }
+
+    function wordElement(id, { interactive = false, flying = false } = {}) {
+      const node = document.createElement(interactive ? "button" : "span");
+      node.className = interactive ? "flow-word cut-target" : "flow-word";
+      node.dataset.word = id;
+      node.textContent = words[id].text;
+      node.style.viewTransitionName = "word-" + id;
+      node.toggleAttribute("data-flying", flying);
+      if (interactive) {
+        node.type = "button";
+        node.setAttribute("aria-label", "Cut “" + words[id].text + "”");
+      }
+      return node;
+    }
+
+    function appendWords(container, ids, options) {
+      for (const [index, id] of ids.entries()) {
+        if (index) container.append(" ");
+        container.append(wordElement(id, options(id)));
       }
     }
 
-    function paintOmissions() {
+    function paintSelection() {
+      cutButton.disabled = comparing || inHistory() || !selected.length;
+      for (const token of passage.querySelectorAll("[data-word]")) {
+        token.toggleAttribute("data-selected", selected.includes(Number(token.dataset.word)));
+      }
+    }
+
+    function paintOmissions(cuts) {
       if (!highlights) return;
       highlights.delete("omission");
+      inspectCut(undefined);
       ownedRanges.clear();
       if (!comparing) return;
 
-      // A later cut can span a gap left by an earlier one. Keep its pieces separate.
+      // A cut can span gaps left by previous cuts. Preserve those gaps in the original.
       for (const cut of cuts) {
         let start = cut.words[0];
-        for (const [index, word] of cut.words.entries()) {
+        for (const [index, id] of cut.words.entries()) {
           const next = cut.words[index + 1];
-          if (next?.id === word.id + 1) continue;
-          ownedRanges.set(rangeFor(words[start.id].start, words[word.id].end), cut.id);
+          if (next === id + 1) continue;
+          const range = document.createRange();
+          range.setStart(passage.firstChild, words[start].start);
+          range.setEnd(passage.firstChild, words[id].end);
+          ownedRanges.set(range, cut.id);
           start = next;
         }
       }
       highlights.set("omission", new Highlight(...ownedRanges.keys()));
     }
 
-    function renderReading() {
-      const removed = new Set(cuts.flatMap(cut => cut.words.map(word => word.id)));
-      let offset = 0;
-      visibleWords = words.filter(word => comparing || !removed.has(word.id)).map(word => {
-        const start = offset;
-        offset += word.text.length + 1;
-        return { ...word, start, end: offset - 1 };
-      });
-      passage.textContent = visibleWords.map(word => word.text).join(" ") || "The statement is empty.";
-      passage.classList.toggle("empty", !visibleWords.length);
-      const options = visibleWords.map((word, index) => new Option(`${index + 1}. ${word.text}`, index));
-      firstWord.replaceChildren(new Option("Choose a word", ""), ...options);
-      lastWord.replaceChildren(...options.map(option => option.cloneNode(true)));
-      firstWord.disabled = comparing || !visibleWords.length;
-      lastWord.disabled = true;
-      paintSelection();
-      paintOmissions();
-    }
+    function paintEdition(moving) {
+      const { cuts } = revisions[position];
+      const removed = new Set(cuts.flatMap(cut => cut.words));
+      visibleWords = words.filter(word => !removed.has(word.id));
+      passage.replaceChildren();
+      passage.classList.toggle("empty", !comparing && !visibleWords.length);
 
-    function render({ animate = true } = {}) {
-      selectedWords = [];
-      document.getSelection().removeAllRanges();
-      cutButton.disabled = true;
-      sampleButton.disabled = comparing || cuts.some(cut => cut.words.some(word => word.id === sample.id));
-      compareButton.disabled = !cuts.length;
-      compareButton.setAttribute("aria-pressed", String(comparing));
+      if (comparing || !visibleWords.length) {
+        passage.textContent = comparing ? source : "The statement is empty.";
+      } else {
+        appendWords(passage, visibleWords.map(word => word.id), id => ({
+          interactive: id === targetWord.id && !inHistory(),
+          flying: moving.includes(id),
+        }));
+      }
+      statementLabel.textContent = comparing ? "Original statement" : "Statement";
+
       recordEmpty.hidden = Boolean(cuts.length);
       record.replaceChildren(...cuts.map(cut => {
         const item = document.createElement("li");
-        const quote = document.createElement("q");
-        quote.textContent = cut.words.map(word => word.text).join(" ");
+        const quotation = document.createElement("q");
+        appendWords(quotation, cut.words, id => ({ flying: moving.includes(id) }));
+
         const restore = document.createElement("button");
         restore.type = "button";
+        restore.className = "control";
         restore.dataset.cutId = cut.id;
         restore.textContent = "Restore";
-        restore.setAttribute("aria-label", `Restore “${quote.textContent}”`);
-        item.append(quote, restore);
+        restore.disabled = inHistory();
+        restore.setAttribute("aria-label", "Restore “" + quote(cut.words) + "”");
+        item.append(quotation, restore);
         return item;
       }));
 
-      transition?.skipTransition();
-      if (animate && !reducedMotion.matches && typeof reading.startViewTransition === "function") {
-        const next = reading.startViewTransition(renderReading);
-        transition = next;
-        next.ready.catch(() => {});
-        next.finished.then(() => {
-          if (transition === next) transition = undefined;
-        });
-      } else {
-        renderReading();
-        transition = undefined;
+      paintOmissions(cuts);
+      paintSelection();
+    }
+
+    function paintControls() {
+      const { cuts } = revisions[position];
+      const canChoose = !comparing && !inHistory() && visibleWords.length > 0;
+      const options = visibleWords.map((word, index) => new Option((index + 1) + ". " + word.text, index));
+      firstWord.replaceChildren(new Option("Choose a word", ""), ...options);
+      lastWord.replaceChildren(...options.map(option => option.cloneNode(true)));
+      firstWord.disabled = !canChoose;
+      lastWord.disabled = true;
+
+      compareButton.disabled = !cuts.length;
+      compareButton.setAttribute("aria-pressed", String(comparing));
+      timeline.hidden = revisions.length === 1;
+      replayButton.hidden = reducedMotion.matches;
+      replayButton.disabled = inHistory();
+      revision.max = revisions.length - 1;
+      revision.value = position;
+      const label = position === 0 ? "Original" : "Revision " + position + " of " + revision.max;
+      revisionLabel.value = label;
+      revision.setAttribute("aria-valuetext", label);
+    }
+
+    function clearDrag() {
+      if (!drag) return;
+      drag.button.style.translate = "";
+      drag.button.removeAttribute("data-dragging");
+      delete margin.dataset.drop;
+      drag = undefined;
+    }
+
+    function inspectCut(id) {
+      if (inspectedCut === id) return;
+      inspectedCut = id;
+      passage.toggleAttribute("data-inspecting", id !== undefined);
+      for (const button of record.querySelectorAll("[data-cut-id]")) {
+        button.closest("li").toggleAttribute("data-linked", Number(button.dataset.cutId) === id);
       }
+      highlights.delete("inspection");
+      if (id === undefined) return;
+      const ranges = Array.from(ownedRanges, ([range, cutId]) => cutId === id ? range : null).filter(Boolean);
+      const inspection = new Highlight(...ranges);
+      inspection.priority = 1;
+      highlights.set("inspection", inspection);
+    }
+
+    function omissionAt(event) {
+      if (!comparing || !highlights?.highlightsFromPoint) return;
+      for (const { ranges } of highlights.highlightsFromPoint(event.clientX, event.clientY)) {
+        const range = ranges.find(candidate => ownedRanges.has(candidate));
+        if (range) return ownedRanges.get(range);
+      }
+    }
+
+    function animateFallback(previousRects) {
+      for (const [id, before] of previousRects) {
+        const node = edition.querySelector('[data-word="' + id + '"]');
+        if (!node) continue;
+        const after = node.getBoundingClientRect();
+        if (!after.width || !after.height) continue;
+        const x = before.x - after.x;
+        const y = before.y - after.y;
+        const sx = before.width / after.width;
+        const sy = before.height / after.height;
+        if (Math.abs(x) + Math.abs(y) < 1) continue;
+
+        node.animate([
+          { transform: "translate(" + x + "px, " + y + "px) scale(" + sx + ", " + sy + ")" },
+          { offset: 0.46, transform: "translate(" + x * 0.54 + "px, " + (y * 0.54 - 28) + "px)" },
+          { transform: "none" },
+        ], { duration: 880, easing: "cubic-bezier(.2,.72,.18,1)" });
+      }
+    }
+
+    function render({ moving = [], animate = true, focus } = {}) {
+      const version = ++renderVersion;
+      transition?.skipTransition();
+      transition = undefined;
+      selected = [];
+      document.getSelection().removeAllRanges();
+
+      const update = () => {
+        if (version !== renderVersion) return;
+        clearDrag();
+        paintEdition(moving);
+        paintControls();
+        focus?.()?.focus({ preventScroll: true });
+      };
+      if (!animate || reducedMotion.matches) {
+        update();
+        return;
+      }
+
+      const previousRects = new Map();
+      for (const id of moving) {
+        const node = edition.querySelector('[data-word="' + id + '"]');
+        if (!node) continue;
+        node.setAttribute("data-flying", "");
+        previousRects.set(id, node.getBoundingClientRect());
+      }
+
+      const scope = typeof edition.startViewTransition === "function" ? edition : document;
+      if (typeof scope.startViewTransition !== "function") {
+        update();
+        animateFallback(previousRects);
+        return;
+      }
+
+      const next = scope.startViewTransition(update);
+      transition = next;
+      next.ready.catch(() => {
+        if (transition === next && !reducedMotion.matches) animateFallback(previousRects);
+      });
+      next.finished.then(() => {
+        if (transition === next) transition = undefined;
+      });
+    }
+
+    function changeCuts(cuts, moving, message, focus) {
+      revisions.push({ cuts, message });
+      position = revisions.length - 1;
+      comparing = false;
+      render({ moving, focus });
+      status.textContent = message;
+    }
+
+    function cut(ids, focus) {
+      if (comparing || inHistory() || transition || !ids.length) return;
+      const cuts = revisions[position].cuts;
+      const removal = { id: nextCutId++, words: [...ids] };
+      changeCuts([...cuts, removal], ids, "Cut “" + quote(ids) + "”.", focus);
     }
 
     document.addEventListener("selectionchange", () => {
       const selection = document.getSelection();
-      if (comparing || transition || !selection.rangeCount || selection.isCollapsed) return;
+      if (comparing || inHistory() || transition || !selection.rangeCount || selection.isCollapsed) return;
       const range = selection.getRangeAt(0);
-      if (range.startContainer !== passage.firstChild || range.endContainer !== passage.firstChild) return;
-      selectedWords = visibleWords.filter(word => word.start < range.endOffset && word.end > range.startOffset);
+      if (!passage.contains(range.startContainer) || !passage.contains(range.endContainer)) return;
+      selected = Array.from(passage.querySelectorAll("[data-word]")).filter(token => {
+        const text = token.firstChild;
+        return range.intersectsNode(text)
+          && (range.startContainer !== text || range.startOffset < text.length)
+          && (range.endContainer !== text || range.endOffset > 0);
+      }).map(token => Number(token.dataset.word));
       paintSelection();
     });
 
     firstWord.addEventListener("change", () => {
-      if (firstWord.value === "") {
-        lastWord.disabled = true;
-        selectedWords = [];
-        paintSelection();
-        return;
-      }
-      lastWord.disabled = false;
+      selected = firstWord.value === "" ? [] : [visibleWords[Number(firstWord.value)].id];
+      lastWord.disabled = !selected.length;
       lastWord.value = firstWord.value;
-      selectedWords = [visibleWords[Number(firstWord.value)]];
       paintSelection();
     });
 
     lastWord.addEventListener("change", () => {
-      const a = Number(firstWord.value);
-      const b = Number(lastWord.value);
-      selectedWords = visibleWords.slice(Math.min(a, b), Math.max(a, b) + 1);
+      const start = Number(firstWord.value);
+      const end = Number(lastWord.value);
+      selected = visibleWords.slice(Math.min(start, end), Math.max(start, end) + 1).map(word => word.id);
       paintSelection();
     });
 
-    function cut(selected) {
-      if (comparing || !selected.length) return;
-      cuts.push({ id: nextCutId++, words: selected });
-      render();
-      status.textContent = `Cut “${selected.map(word => word.text).join(" ")}”.`;
-    }
+    cutButton.addEventListener("click", () => cut(selected, () => compareButton));
 
-    cutButton.addEventListener("click", () => cut(selectedWords));
-    sampleButton.addEventListener("click", () => cut([sample]));
     compareButton.addEventListener("click", () => {
       comparing = !comparing;
       render();
-      if (!comparing) {
-        status.textContent = "Showing the edited statement.";
-        return;
-      }
-      status.textContent = highlights?.highlightsFromPoint
-        ? "Showing the original. Click a marked phrase to find its record."
-        : "Showing the original. Restore a phrase from the record.";
+      status.textContent = comparing
+        ? highlights?.highlightsFromPoint
+          ? "Click a marked phrase to find its record."
+          : "Restore any marked phrase from the margin."
+        : revisions[position].message;
     });
 
     record.addEventListener("click", event => {
       const button = event.target.closest("button[data-cut-id]");
-      if (!button) return;
-      const index = cuts.findIndex(cut => cut.id === Number(button.dataset.cutId));
-      const [restored] = cuts.splice(index, 1);
-      if (!cuts.length) comparing = false;
-      render();
-      status.textContent = `Restored “${restored.words.map(word => word.text).join(" ")}”.`;
-      (record.querySelector("button") ?? sampleButton).focus();
+      if (!button || transition || inHistory()) return;
+      const cuts = revisions[position].cuts;
+      const restored = cuts.find(cut => cut.id === Number(button.dataset.cutId));
+      if (!restored) return;
+      changeCuts(cuts.filter(cut => cut !== restored), restored.words, "Restored “" + quote(restored.words) + "”.",
+        () => passage.querySelector("button") ?? record.querySelector("button") ?? revision);
     });
 
-    passage.addEventListener("click", event => {
-      if (!comparing || !document.getSelection().isCollapsed) return;
-      if (!highlights?.highlightsFromPoint) return;
-      const hits = highlights.highlightsFromPoint(event.clientX, event.clientY);
-      for (const { ranges } of hits) {
-        for (const range of ranges) {
-          const id = ownedRanges.get(range);
-          if (!id) continue;
-          record.querySelector(`[data-cut-id="${id}"]`)?.focus();
-          return;
+    revision.addEventListener("input", () => {
+      const next = Number(revision.value);
+      if (next === position) return;
+      position = next;
+      comparing = false;
+      render({ animate: false });
+      status.textContent = revisions[position].message + (inHistory() ? " Move to the latest revision to edit." : "");
+    });
+
+    replayButton.addEventListener("click", () => {
+      if (transition || inHistory() || reducedMotion.matches) return;
+      const latest = position;
+      const previousWords = new Set(revisions[latest - 1].cuts.flatMap(cut => cut.words));
+      const currentWords = new Set(revisions[latest].cuts.flatMap(cut => cut.words));
+      const moving = words.map(word => word.id).filter(id => previousWords.has(id) !== currentWords.has(id));
+      position = latest - 1;
+      comparing = false;
+      render({ animate: false });
+      const version = renderVersion;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (renderVersion !== version) return;
+        position = latest;
+        render({ moving, focus: () => replayButton });
+        status.textContent = revisions[position].message;
+      }));
+    });
+
+    function insideMargin(x, y) {
+      const bounds = margin.getBoundingClientRect();
+      return x >= bounds.left && x <= bounds.right && y >= bounds.top && y <= bounds.bottom;
+    }
+
+    passage.addEventListener("pointerdown", event => {
+      const button = event.target.closest(".cut-target");
+      if (!button || transition || !event.isPrimary || event.button !== 0) return;
+      drag = { button, pointer: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+      button.setPointerCapture(event.pointerId);
+    });
+
+    passage.addEventListener("pointermove", event => {
+      if (!drag) {
+        if (comparing && highlights) inspectCut(omissionAt(event));
+        return;
+      }
+      if (drag.pointer !== event.pointerId || drag.canceled) return;
+      const x = event.clientX - drag.x;
+      const y = event.clientY - drag.y;
+      if (!drag.moved && Math.hypot(x, y) < 8) return;
+      drag.moved = true;
+      drag.button.removeAttribute("data-arrival");
+      drag.button.setAttribute("data-dragging", "");
+      drag.button.style.translate = x + "px " + y + "px";
+      margin.dataset.drop = insideMargin(event.clientX, event.clientY) ? "ready" : "waiting";
+    });
+
+    passage.addEventListener("pointerup", event => {
+      if (!drag || drag.pointer !== event.pointerId) return;
+      if (!drag.moved) {
+        clearDrag();
+        return;
+      }
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 0);
+      if (!drag.canceled && insideMargin(event.clientX, event.clientY)) {
+        cut([targetWord.id]);
+      } else {
+        const button = drag.button;
+        const translation = button.style.translate;
+        clearDrag();
+        if (translation && !reducedMotion.matches) {
+          button.animate([{ translate: translation }, { translate: "0 0" }], { duration: 260 });
         }
       }
     });
 
+    passage.addEventListener("pointercancel", clearDrag);
+    passage.addEventListener("pointerleave", () => {
+      if (highlights) inspectCut(undefined);
+    });
+
+    passage.addEventListener("click", event => {
+      if (event.target.closest(".cut-target") && !suppressClick) {
+        cut([targetWord.id], event.detail ? undefined : () => compareButton);
+        return;
+      }
+      if (!document.getSelection().isCollapsed) return;
+      const id = omissionAt(event);
+      if (id !== undefined) record.querySelector('[data-cut-id="' + id + '"]:enabled')?.focus();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Escape" || !drag?.moved) return;
+      drag.canceled = true;
+      drag.button.style.translate = "";
+      drag.button.removeAttribute("data-dragging");
+      delete margin.dataset.drop;
+    });
+
+    reducedMotion.addEventListener("change", () => {
+      replayButton.hidden = reducedMotion.matches;
+      if (reducedMotion.matches) transition?.skipTransition();
+    });
+
     render({ animate: false });
-    toolbar.hidden = false;
-    wordControls.hidden = false;
+    passage.querySelector(".cut-target").setAttribute("data-arrival", "");
+    document.querySelector("#controls").hidden = false;
+    document.querySelector("#directions").hidden = false;
   </script>
 </body>
 </html>

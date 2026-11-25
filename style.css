@@ -99,6 +99,7 @@ a { color: inherit; }
 
 .site-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: clamp(1.2rem, 3.3vw, 3rem);
   color: var(--muted);
 }
