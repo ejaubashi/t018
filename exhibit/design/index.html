@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2eee4">
+  <meta name="description" content="Five design studies for Typefield, a text-only exhibition that can change its own layout.">
+  <title>Typefield · Design studies</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../exhibit.css?v=5">
+  <link rel="stylesheet" href="studies.css">
+</head>
+<body>
+  <a class="skip" href="#study-title">Skip to the study</a>
+  <header class="masthead">
+    <div class="shell study-masthead">
+      <a class="brand" href="../../">typefield<span>.</span></a>
+      <nav aria-label="Study navigation"><a href="#references">References</a><a href="#proposals">Designs</a><a href="../../?view=proof">Proof sheet ↗</a></nav>
+    </div>
+  </header>
+  <main class="shell design-report">
+    <header class="study-cover">
+      <h1 id="study-title" tabindex="-1">What a page can become<span>.</span></h1>
+      <div>
+        <p>Five design studies for a text-only exhibition. Each turns a relationship between sections into something the reader can change.</p>
+        <p class="micro study-date"><time datetime="2026-11-26">26 November 2026</time></p>
+      </div>
+    </header>
+
+    <section class="study-live" aria-labelledby="live-title">
+      <div>
+        <p class="micro">Implemented in Typefield</p>
+        <h2 id="live-title">Proof sheet<span>.</span></h2>
+      </div>
+      <div>
+        <p>Open the sheet midway through a fold. The same Exhibit, Studio, and Lab rearrange into a single view. Choose a panel to read it full size or close the sheet to resume at the position you left.</p>
+        <a href="../../?view=proof">Try the live proof sheet ↗</a>
+      </div>
+    </section>
+
+    <section class="study-references" id="references" aria-labelledby="references-title">
+      <h2 id="references-title">What the references show</h2>
+      <dl>
+        <div>
+          <dt>Position can carry a story</dt>
+          <dd>Codrops’ layout studies move image sets between arrangements using Flip and ScrollTrigger. An item already in view gives the eye a reference when the layout changes. Typefield uses the actual headings and sculpture for that continuity. <a href="https://github.com/codrops/ScrollBasedLayoutAnimations">Scroll-Based Layout Animations</a></dd>
+        </div>
+        <div>
+          <dt>A transition can belong to a particular entrance</dt>
+          <dd>Interlude makes each phrase on its home page the entry to its own transition. Its November 2026 source also restores focus inside the destination. In Typefield, the typographic motion should explain where a link went and put the keyboard in the place it opened. <a href="https://github.com/codrops/interlude">Interlude</a></dd>
+        </div>
+        <div>
+          <dt>One object can have two arrangements</dt>
+          <dd>Bookbinder’s proof layouts show how the same pages sit together on a printed sheet before folding. Typefield can offer those two views of a single page directly. The sheet makes the whole publication legible at once, and the reading view gives each section room. <a href="https://github.com/momijizukamori/bookbinder-js#auditing-results">Bookbinder</a></dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="study-proposals" id="proposals" aria-labelledby="proposals-title">
+      <h2 id="proposals-title">Five designs to test</h2>
+      <article>
+        <h3>Proof sheet</h3>
+        <div>
+          <p><strong>See the whole edition, then enter any part.</strong> A long scroll composes itself into three plates. On wide screens Exhibit spans two rows beside Studio and Lab. On phones it sits above both, in reading order. Lilac, ink, and plum make the sections recognisable when their scale changes.</p>
+          <p>CSS Grid changes the layout of the existing elements. Named snapshots carry visible headings and the sculpture across the reflow. The test is to pause halfway through a fold, open the sheet, close it, and recover the same words, viewing angle, and fold position. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition">Document view transitions</a></p>
+        </div>
+      </article>
+      <article>
+        <h3>Split spread</h3>
+        <div>
+          <p><strong>Pull two chapters into the same spread.</strong> A divider between Exhibit and Studio opens so the sculpture can sit beside the fields that form it. Pull it back and the edited word becomes the sculpture’s caption. Give either side enough width to work without closing the spread.</p>
+          <p>Use a keyboard-adjustable divider and size the typography with container queries. At phone widths stack both chapters and keep the edited word visible as the bridge. Test whether someone can adjust a word and inspect its result while keeping both controls within reach. <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries">Container queries</a></p>
+        </div>
+      </article>
+      <article>
+        <h3>Shared margin</h3>
+        <div>
+          <p><strong>Let a word open the margin beside it.</strong> Choose “angle” in Exhibit and a sample from Facet takes its place on the same baseline in the margin. The margin then extends into Lab while the source word holds its position.</p>
+          <p>Anchor the sample to the word, offer an inline position on narrow screens, and match the label when navigating into the room. Test whether returning from the experiment restores the actual word and line. <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning">CSS anchor positioning</a></p>
+        </div>
+      </article>
+      <article>
+        <h3>Parallel editions</h3>
+        <div>
+          <p><strong>Compose on one screen and read on another.</strong> Open a second Typefield window on the proof sheet. A word written in Studio changes the print on the other screen while the two windows hold their own reading positions. Each window uses typography suited to its role.</p>
+          <p>Relay already synchronizes words between windows. Publish the committed word pair with that pattern and keep scroll and focus local. Test whether both windows show the same print after either writer reconnects. <a href="../../lab/relay/">Relay experiment</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API">Broadcast Channel API</a></p>
+        </div>
+      </article>
+      <article>
+        <h3>Reorder the edition</h3>
+        <div>
+          <p><strong>Change the order while the edition stays alive.</strong> Place Studio before Exhibit and the publication becomes an invitation to write before seeing the sculpture. Move Lab to the front and the catalogue becomes the opening. The navigation, focus order, and section transitions follow the new sequence.</p>
+          <p>Move the actual sections with <code>moveBefore()</code> where supported. A saved order can also be applied at page load. Test with an unfinished word and a paused score. Both should survive the change in sequence. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/moveBefore">State-preserving DOM moves</a></p>
+        </div>
+      </article>
+    </section>
+    <footer class="study-end">
+      <p>The proof sheet comes first because it lets a reader see and choose among all three sections in one place. Layout, state, and navigation remain connected when the page changes scale.</p>
+      <a href="../../?view=proof">Open Typefield in proof view ↗</a>
+    </footer>
+  </main>
+</body>
+</html>

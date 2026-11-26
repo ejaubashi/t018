@@ -72,6 +72,7 @@ function moveIndex(position) {
 
 function refresh() {
   frame = 0;
+  if (root.hasAttribute("data-proof")) return;
   const height = window.innerHeight;
   const headerHeight = masthead.offsetHeight;
   const activationLine = Math.max(headerHeight + 25, height * 0.24);
@@ -115,6 +116,7 @@ function measure() {
   const headerHeight = masthead.offsetHeight;
   root.style.setProperty("--masthead-edge", headerHeight + "px");
   root.style.setProperty("--masthead-space", (headerHeight + 14) + "px");
+  if (root.hasAttribute("data-proof")) return;
   turnStart = Math.round(window.scrollY + fold.getBoundingClientRect().top - headerHeight);
   turnDistance = fold.offsetHeight - board.offsetHeight;
   fold.style.setProperty("--turn-start", turnStart + "px");
@@ -171,6 +173,7 @@ export function recastProjection(update) {
   function reveal(behavior) {
     if (attempt !== revision) return;
     update();
+    if (root.hasAttribute("data-proof")) return;
     exhibit.focus({ preventScroll: true });
     exhibit.scrollIntoView({ block: "start", behavior });
     schedule();

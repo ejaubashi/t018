@@ -2,6 +2,7 @@ import { labMotion } from "../lab/motion.js";
 import { projectWords, rows } from "./optics.js";
 import { createLetterField, glyphPoint } from "./letter-field.js";
 import { alignOpeningAnchor, recastProjection, writeFold } from "./chapters.js";
+import { initializeProof } from "./proof.js";
 import {
   carry, clamp, exposureLag, exposures, glide, lensPass, limit, mix,
   scoreAt, scoreDuration, waveDuration,
@@ -602,3 +603,4 @@ document.querySelector("#exhibit-controls").hidden = false;
 document.querySelector("#motion-controls").hidden = false;
 document.querySelector("#change-words").hidden = false;
 alignOpeningAnchor();
+initializeProof(measure);

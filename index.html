@@ -8,10 +8,11 @@
   <title>Two readings · Typefield</title>
   <link rel="icon" href="data:,">
   <link rel="preload" href="fonts/archivo-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="exhibit/exhibit.css?v=4">
+  <link rel="stylesheet" href="exhibit/exhibit.css?v=5">
   <link rel="stylesheet" href="exhibit/passage.css">
+  <link rel="stylesheet" href="exhibit/proof.css">
   <script type="module" blocking="render" src="exhibit/passage.js"></script>
-  <script type="module" src="exhibit/exhibit.js?v=4"></script>
+  <script type="module" src="exhibit/exhibit.js?v=5"></script>
 </head>
 <body>
   <a class="skip" href="#exhibit-title">Skip to the exhibit</a>
@@ -23,17 +24,24 @@
         <a href="#studio" data-section="studio">Studio</a>
         <a href="#lab" data-section="lab">Lab</a>
       </nav>
-      <button class="plain-button" id="motion" type="button" aria-pressed="false" hidden>Reduce motion</button>
+      <div class="masthead-actions">
+        <button class="plain-button" id="proof-toggle" type="button" aria-pressed="false" hidden>Proof sheet</button>
+        <button class="plain-button" id="motion" type="button" aria-pressed="false" hidden>Reduce motion</button>
+      </div>
     </div>
     <div class="reading-progress" aria-hidden="true"></div>
   </header>
 
   <main>
+    <header class="proof-heading" id="proof-heading" tabindex="-1" aria-label="Proof sheet" hidden>
+      <p class="proof-title">Proof sheet<span>.</span></p>
+      <p>Choose a section to open it at reading size.</p>
+    </header>
     <section class="opening shell" id="opening" data-chapter="exhibit" aria-labelledby="exhibit-title">
       <div class="opening-cover">
         <header class="opening-title">
           <h1 id="exhibit-title" tabindex="-1">Two <span class="title-line">readings<span class="title-stop">.</span></span></h1>
-          <p>One cloud of characters. Two readable angles. Drag the type to turn it.</p>
+          <p>One cloud of characters. Two readable angles.<span class="exhibit-instruction"> Drag the type to turn it.</span></p>
           <a class="turn-link" href="#type-fold">Turn the page <span aria-hidden="true">↓</span></a>
         </header>
         <div class="exhibit" id="exhibit" tabindex="-1" role="group" aria-label="A rotating cloud of text" aria-describedby="exhibit-reading">
@@ -78,6 +86,7 @@
         </div>
       </div>
       <div class="chapter-exit"><a href="#studio">Make your own projection <span aria-hidden="true">↓</span></a></div>
+      <a class="proof-link" href="#exhibit" data-proof-link hidden>Open Exhibit <span aria-hidden="true">↗</span></a>
     </section>
 
     <section class="studio" data-chapter="studio" aria-labelledby="studio-title">
@@ -111,6 +120,7 @@
           <p class="micro word-note" id="word-note" role="status">Use two to six letters A–Z per word.</p>
         </div>
       </div>
+      <a class="proof-link" href="#studio" data-proof-link hidden>Open Studio <span aria-hidden="true">↗</span></a>
     </section>
 
     <section class="lab-chapter" id="lab" data-chapter="lab" aria-labelledby="lab-title" tabindex="-1">
@@ -123,6 +133,7 @@
           <a data-door="shape" href="lab/?category=shape#experiments">Shape <span aria-hidden="true">↗</span></a>
         </nav>
       </div>
+      <a class="proof-link" href="#lab" data-proof-link hidden>Open Lab <span aria-hidden="true">↗</span></a>
     </section>
   </main>
   <footer class="site-foot shell">
@@ -130,7 +141,7 @@
       <summary>How the projection works</summary>
       <p>The browser samples two text outlines and positions the same characters to match both. The studies turn, bend, displace, and reprint those characters. <a href="https://github.com/ejaubashi/t018/blob/main/research.md#motion-studies">Motion research and sources</a></p>
     </details>
-    <nav aria-label="More Typefield links"><a href="typefield-figma.zip" download>Figma storyboard</a><a href="playground/">Playground</a><a href="#opening">Back to Exhibit ↑</a></nav>
+    <nav aria-label="More Typefield links"><a href="exhibit/design/">Design studies</a><a href="typefield-figma.zip" download>Figma storyboard</a><a href="playground/">Playground</a><a href="#opening">Back to Exhibit ↑</a></nav>
   </footer>
 </body>
 </html>

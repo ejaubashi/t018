@@ -1,0 +1,147 @@
+.masthead-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  justify-self: end;
+}
+
+@media (max-width: 31rem) {
+  .masthead-actions { grid-area: 1 / 2; flex-wrap: nowrap; }
+  .masthead-actions button { min-height: 2.3rem; padding-inline: 0.42rem; font-size: 0.68rem; white-space: nowrap; }
+}
+
+:root[data-proof] main {
+  --proof-gap: clamp(0.25rem, 0.65vw, 0.7rem);
+  width: min(93rem, calc(100% - 2 * var(--gutter)));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(14.5rem, auto) minmax(13rem, auto);
+  gap: var(--proof-gap);
+}
+
+.proof-heading {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.8rem 2rem;
+  padding-block: clamp(1.65rem, 4.4vw, 4.2rem) clamp(1rem, 2.65vw, 2.65rem);
+}
+.proof-heading > p:last-child { max-width: 24ch; color: var(--muted); }
+.proof-title {
+  font: 570 clamp(3.2rem, 8.2vw, 8rem)/0.8 var(--serif);
+  font-variation-settings: "opsz" 116, "wght" 570, "SOFT" 12;
+  letter-spacing: -0.062em;
+}
+.proof-title span { color: var(--accent); }
+
+:root[data-proof] .reading-progress,
+:root[data-proof] :is(.turn-link, .exhibit-instruction, .exhibit-controls, .motion-controls, .chapter-exit, .change-words, .lab-arrow, .lab-entrances) { display: none; }
+:root[data-proof] .type-fold { position: absolute; inset: 0 0 auto; block-size: 0; overflow: hidden; visibility: hidden; }
+
+:root[data-proof] main > section {
+  container-type: inline-size;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-content: space-between;
+  width: auto;
+  min-block-size: 0;
+  margin: 0;
+  padding: clamp(0.85rem, 2.3vw, 2.25rem);
+}
+:root[data-proof] .opening {
+  grid-area: 2 / 1 / 4 / 2;
+  background: #e4e3f9;
+  color: #1e226d;
+}
+:root[data-proof] .studio { grid-area: 2 / 2 / 3 / 3; }
+:root[data-proof] .lab-chapter { grid-area: 3 / 2 / 4 / 3; background: var(--lab-ink); }
+:root[data-proof] .lab-chapter::before { display: none; }
+:root[data-proof] :is(.opening-cover, .studio-inner, .lab-threshold) {
+  width: 100%;
+  display: block;
+  padding: 0;
+  border: 0;
+}
+:root[data-proof] .opening-title {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+:root[data-proof] #exhibit-title {
+  font-size: clamp(2.6rem, 12.4cqw, 6.5rem);
+  word-spacing: 0.04em;
+}
+:root[data-proof] .title-line { display: inline; }
+:root[data-proof] .opening-title p { max-width: 36ch; margin-block: 0.95rem; color: #464679; font-size: clamp(0.9rem, 2.85cqw, 1rem); }
+:root[data-proof] .exhibit { height: clamp(8.25rem, 52cqw, 22rem); cursor: default; pointer-events: none; }
+:root[data-proof] #studio-title { max-width: 11ch; font-size: clamp(2.05rem, 12.5cqw, 5rem); }
+:root[data-proof] .studio-inner p { margin-top: 0.7rem; font-size: clamp(0.88rem, 4.7cqw, 1.025rem); }
+:root[data-proof] #lab-title { margin: 0.34rem 0 0.23rem; font-size: clamp(4rem, 24cqw, 8.9rem); }
+:root[data-proof] #lab-title a { pointer-events: none; }
+:root[data-proof] .lab-word { animation: none !important; }
+
+.proof-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: end;
+  padding-block: 0.65rem 0.05rem;
+  margin-top: clamp(0.7rem, 1.4vw, 1.4rem);
+  border-top: 1px solid currentColor;
+  text-decoration: none;
+  font: 0.8rem/1.35 var(--mono);
+}
+.proof-link::after { position: absolute; z-index: 5; inset: 0; content: ""; }
+.proof-link:hover { color: inherit; text-decoration: underline; }
+.proof-link span { transition: none; }
+.opening .proof-link span { color: var(--accent); }
+.studio .proof-link span { color: var(--studio-accent); }
+.lab-chapter .proof-link span { color: #ffc4d9; }
+:root[data-lab-motion="full"] .proof-link span { transition: transform 220ms cubic-bezier(.17,.72,.23,1); }
+.proof-link:is(:hover,:focus-visible) span { transform: translate(0.2em, -0.13em); }
+:root[data-proof] .proof-link:focus-visible { outline: 0; }
+.proof-link:focus-visible::after { outline: 2px solid currentColor; outline-offset: -5px; }
+
+@media (max-width: 46rem) {
+  :root[data-proof] main { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto minmax(12.5rem, auto); }
+  :root[data-proof] .opening { grid-area: 2 / 1 / 3 / 3; }
+  :root[data-proof] .studio { grid-area: 3 / 1 / 4 / 2; }
+  :root[data-proof] .lab-chapter { grid-area: 3 / 2 / 4 / 3; }
+  :root[data-proof] .opening-title p { margin-block: 0.6rem 0.75rem; }
+  :root[data-proof] .exhibit { height: clamp(8.25rem, 46cqw, 16rem); }
+  :root[data-proof] .studio-inner p { max-width: 26ch; font-size: 0.87rem; }
+}
+@media (max-width: 23rem) {
+  :root[data-proof] main > section { padding: 0.7rem; }
+  :root[data-proof] #studio-title { font-size: 1.9rem; }
+  :root[data-proof] #lab-title { font-size: 3.65rem; }
+  .proof-link { font-size: 0.71rem; }
+}
+
+@keyframes unroll-sheet {
+  from { clip-path: polygon(0 0, 100% 0, 100% 0, 0 6%); }
+  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+@keyframes restore-reading {
+  from { clip-path: polygon(0 95%, 100% 100%, 100% 100%, 0 100%); }
+  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+:root[data-proof-motion]::view-transition { pointer-events: none; }
+:root[data-proof-motion]::view-transition-group(*) {
+  animation-duration: 650ms;
+  animation-timing-function: cubic-bezier(.2,.77,.21,1);
+}
+:root[data-proof-motion]::view-transition-group(proof-exhibit),
+:root[data-proof-motion]::view-transition-group(proof-plate),
+:root[data-proof-motion]::view-transition-group(proof-studio),
+:root[data-proof-motion]::view-transition-group(proof-lab) { z-index: 2; }
+:root[data-proof-motion]::view-transition-old(root) { animation: passage-out 650ms both; mix-blend-mode: normal; }
+:root[data-proof-motion]::view-transition-new(root) { animation: unroll-sheet 650ms cubic-bezier(.2,.77,.21,1) both; mix-blend-mode: normal; }
+:root[data-proof-motion="close"]::view-transition-new(root) { animation-name: restore-reading; }
