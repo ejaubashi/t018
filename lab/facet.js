@@ -1,3 +1,5 @@
+import { labMotion } from "./motion.js";
+
 const stage = document.querySelector("#facet-stage");
 const optic = stage.querySelector(".facet-optic");
 const scene = document.querySelector("#facet-scene");
@@ -7,7 +9,7 @@ const degrees = document.querySelector("#facet-degrees");
 const reading = document.querySelector("#facet-reading");
 const sweep = document.querySelector("#facet-sweep");
 const presets = [...document.querySelectorAll("[data-angle]")];
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const reducedMotion = labMotion;
 const supportsAngleAnimation = "registerProperty" in CSS && CSS.supports("transform: scaleX(calc(1 / cos(45deg)))");
 const print = {
   first: { lines: ["I STAYED", "TO LISTEN."], reading: "I stayed to listen." },

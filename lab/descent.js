@@ -1,9 +1,11 @@
+import { labMotion } from "./motion.js";
+
 const stage = document.querySelector("#descent-stage");
 const heading = document.querySelector("#descent-title");
 const passage = document.querySelector("#descent-copy");
 const back = document.querySelector("#descent-back");
 const status = document.querySelector("#descent-status");
-const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const motion = labMotion;
 const address = new URL(location.href);
 const nativeNavigation = window.navigation?.currentEntry && typeof window.NavigateEvent?.prototype.intercept === "function";
 const spots = new Map();

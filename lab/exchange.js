@@ -1,3 +1,5 @@
+import { labMotion } from "./motion.js";
+
 const stage = document.querySelector("#exchange-stage");
 const people = document.querySelector("#people-word");
 const verb = document.querySelector("#verb-word");
@@ -5,7 +7,7 @@ const city = document.querySelector("#city-word");
 const reading = document.querySelector("#exchange-reading");
 const buttons = [...document.querySelectorAll("[data-voice-choice]")];
 const swap = document.querySelector("#swap-voice");
-const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const motion = labMotion;
 let voice = "we";
 let transition;
 

@@ -1,9 +1,11 @@
+import { labMotion } from "./motion.js";
+
 const stage = document.querySelector("#gravity-stage");
 const print = stage.querySelector(".gravity-print");
 const pulseButton = document.querySelector("#pulse");
 const forceButtons = [...document.querySelectorAll("[data-force]")];
 const engineLabel = document.querySelector("#gravity-engine");
-const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const motion = labMotion;
 const particles = [];
 const lines = [...print.childNodes].filter(node => node.nodeType === Node.TEXT_NODE).map(node => node.textContent.trim());
 

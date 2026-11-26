@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Measure · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../editorial.css">
+  <link rel="stylesheet" href="../chrome.css">
+</head>
+<body class="room theme-measure">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Other experiments">
+      <a href="../score/">← Score</a>
+      <a href="../relay/">Relay →</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Measure</h1>
+      <p>Adjust the column and compare wrap styles. The marked spaces and line counts come from the browser’s actual layout.</p>
+    </header>
+    <div class="controls measure-controls" id="measure-controls" hidden>
+      <label class="range-control" for="measure-width">
+        <span class="micro">Column width</span><input type="range" id="measure-width" min="18" max="64" value="32">
+      </label>
+      <output class="micro" id="measure-width-value" for="measure-width">32 ch</output>
+      <div class="choice" role="group" aria-label="Line wrapping">
+        <button class="control" type="button" data-wrap="wrap" aria-pressed="true">Natural</button>
+        <button class="control" type="button" data-wrap="balance" aria-pressed="false">Balance</button>
+        <button class="control" type="button" data-wrap="pretty" aria-pressed="false">Pretty</button>
+      </div>
+      <button class="control" type="button" id="measure-trim" aria-pressed="false">Trim leading</button>
+    </div>
+    <div class="instrument measure-stage">
+      <section class="measure-paper" aria-labelledby="measure-proof-title">
+        <h2 class="micro" id="measure-proof-title">Proof</h2>
+        <div class="measure-column" id="measure-column">
+          <p id="measure-copy">I put the same sentence in two columns. In the wide one, the last word belonged to the line above. In the narrow one, it waited by itself. The words had not changed. The pause had.</p>
+          <div id="measure-marks" class="measure-marks" aria-hidden="true"></div>
+        </div>
+      </section>
+      <section class="measure-ledger" aria-labelledby="measure-lines-title">
+        <h2 class="micro" id="measure-lines-title">Line endings</h2>
+        <p class="micro" id="measure-summary"></p>
+        <ol id="measure-lines"></ol>
+      </section>
+    </div>
+    <details class="measure-text" id="measure-text" hidden>
+      <summary class="micro">Try your own paragraph</summary>
+      <label for="measure-input" class="sr-only">Proof text</label>
+      <textarea id="measure-input" maxlength="480" rows="3">I put the same sentence in two columns. In the wide one, the last word belonged to the line above. In the narrow one, it waited by itself. The words had not changed. The pause had.</textarea>
+    </details>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>Native wrapping produces the lines. DOM ranges measure the actual glyph positions and drive the marks at the ends. The ledger reports unused width in CSS pixels. Leading trim uses <code>text-box-trim</code> where supported. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Range/getClientRects">Range rectangles</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-box-trim">Text box trim</a></p>
+    </details>
+  </main>
+  <script type="module" src="../chrome.js"></script>
+  <script type="module" src="../measure.js"></script>
+</body>
+</html>

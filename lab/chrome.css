@@ -1,0 +1,92 @@
+.lab-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-inline-start: auto;
+}
+
+.lab-tool {
+  min-height: 2.15rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.58rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--paper);
+  font: 0.73rem/1.25 var(--mono);
+  text-decoration: none;
+}
+
+.lab-tool:hover,
+.lab-tool[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.lab-tool[aria-pressed="true"] {
+  background: color-mix(in oklab, var(--accent) 12%, var(--ink));
+}
+
+.lab-index {
+  width: min(41rem, calc(100% - 2rem));
+  max-height: min(80vh, 45rem);
+  padding: clamp(1rem, 3vw, 2.1rem);
+  border: 1px solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
+  overflow: auto;
+}
+
+.lab-index::backdrop { background: rgb(18 19 16 / 0.69); }
+.index-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.index-heading h2 {
+  margin: 0;
+  font-size: clamp(1.65rem, 4vw, 2.8rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.046em;
+}
+
+.lab-index label { display: block; font: 0.75rem/1.4 var(--mono); }
+.lab-index input {
+  width: 100%;
+  min-height: 2.65rem;
+  margin: 0.34rem 0 0.7rem;
+  padding: 0.48rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+#index-result-count { color: var(--muted); }
+#index-results { list-style: none; margin: 0.7rem 0 0; padding: 0; }
+#index-results a {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 0.54fr) minmax(0, 1fr);
+  gap: 0.55rem;
+  padding: 0.7rem 0;
+  border-block-start: 1px solid var(--line);
+  text-decoration: none;
+}
+
+#index-results [aria-current="page"], #index-results a:hover { color: var(--accent); }
+#index-results a span:first-child { font-weight: 690; }
+#index-results a span:last-child { color: var(--muted); font-size: 0.88rem; }
+#index-fallback { margin-top: 0.75rem; }
+.lab-skip { position: absolute; z-index: 20; padding: 0.6rem; background: var(--ink); transform: translateY(-120%); }
+.lab-skip:focus { transform: none; }
+
+@media (max-width: 43rem) {
+  .bar { gap: 0.65rem 0.75rem; }
+  .bar > .lab-name { font-size: 0.78rem; }
+  .lab-tools { gap: 0.3rem; }
+  .lab-tool { padding-inline: 0.43rem; font-size: 0.67rem; }
+  .index-heading { gap: 0.45rem; }
+}

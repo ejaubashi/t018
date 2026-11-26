@@ -1,3 +1,5 @@
+import { labMotion } from "./motion.js";
+
 const witnesses = {
   a: document.querySelector("#witness-a"),
   b: document.querySelector("#witness-b"),
@@ -17,7 +19,7 @@ const question = document.querySelector("#counter-question");
 const ask = document.querySelector("#counter-ask");
 const modelStatus = document.querySelector("#counter-model-status");
 const buttons = [...document.querySelectorAll("[data-quote]")];
-const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const motion = labMotion;
 const highlights = typeof Highlight === "function" ? CSS.highlights : undefined;
 const model = globalThis.LanguageModel;
 const modelOptions = {
@@ -246,3 +248,6 @@ async function checkModel() {
 
 showPair();
 checkModel();
+motion.addEventListener("change", () => {
+  if (motion.matches) for (const quote of Object.values(quotes)) cancelFlight(quote);
+});

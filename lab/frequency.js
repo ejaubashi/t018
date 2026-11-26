@@ -1,10 +1,12 @@
+import { labMotion } from "./motion.js";
+
 const lines = document.querySelector("#frequency-lines");
 const demo = document.querySelector("#frequency-demo");
 const mic = document.querySelector("#frequency-mic");
 const stop = document.querySelector("#frequency-stop");
 const status = document.querySelector("#frequency-status");
 const indicators = [...document.querySelectorAll(".frequency-bands span")];
-const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const motion = labMotion;
 const Audio = window.AudioContext ?? window.webkitAudioContext;
 const glyphs = [];
 const target = new Float32Array(8);

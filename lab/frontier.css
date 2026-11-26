@@ -3,64 +3,6 @@
 .theme-descent { --accent: #dcc8ff; --surface: #eae1f4; }
 .theme-counterpoint { --accent: #ffb6ce; --surface: #2a2028; }
 
-.catalog-heading {
-  padding-block: clamp(2.6rem, 5.4vw, 5.4rem) clamp(2.35rem, 4.5vw, 4.25rem);
-}
-
-.catalog h1 { font-size: clamp(4rem, 11.7vw, 11.3rem); letter-spacing: -0.052em; }
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 1px;
-  border: 1px solid var(--line);
-  background: var(--line);
-}
-
-.feature-link {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-content: space-between;
-  gap: 0.65rem 1rem;
-  min-height: clamp(8.3rem, 13vw, 13rem);
-  height: 100%;
-  padding: clamp(1rem, 2.25vw, 2.1rem);
-  color: var(--accent);
-  background: var(--surface);
-  text-decoration: none;
-  transition: color 230ms ease, background-color 230ms ease;
-}
-
-.feature-link.theme-descent { color: #34264c; }
-.feature-name {
-  font-size: clamp(2.5rem, 5.6vw, 5.3rem);
-  font-stretch: 90%;
-  font-weight: 760;
-  letter-spacing: -0.052em;
-  line-height: 0.92;
-  overflow-wrap: anywhere;
-}
-
-.feature-prompt {
-  grid-column: 1;
-  max-width: 38ch;
-  color: var(--paper);
-  font-size: 0.99rem;
-}
-
-.feature-link.theme-descent .feature-prompt { color: #322842; }
-.feature-arrow { grid-row: 1 / 3; grid-column: 2; font: 1.25rem/1.2 var(--mono); }
-.feature-link:hover, .feature-link:focus-visible { background: var(--accent); color: var(--ink); }
-.feature-link:hover .feature-prompt,
-.feature-link:focus-visible .feature-prompt { color: var(--ink); }
-.feature-link:focus-visible { outline-offset: -5px; outline-color: currentColor; }
-
-.more-experiments { padding-top: clamp(2.5rem, 5vw, 4.4rem); }
-.more-experiments > h2 { margin: 0 0 0.75rem; color: var(--muted); }
-
 .cast-stage {
   display: grid;
   align-items: center;
@@ -218,8 +160,6 @@
 .counter-model { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.55rem 0.8rem; color: var(--muted); }
 
 @media (max-width: 43rem) {
-  .feature-grid { grid-template-columns: minmax(0, 1fr); }
-  .feature-link { min-height: 7.6rem; }
   .frequency-line:nth-child(2) { padding-inline-start: 12%; }
   .theme-counterpoint .room-heading h1 { font-size: clamp(2.85rem, 12.15vw, 5.5rem); }
   .counter-stage { grid-template-columns: minmax(0, 1fr); }

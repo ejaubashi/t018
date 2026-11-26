@@ -7,6 +7,7 @@
   <title>Gravity · Typefield Lab</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../chrome.css">
 </head>
 <body class="room theme-gravity">
   <header class="shell bar">
@@ -37,6 +38,7 @@
       <p>A WebGPU compute shader updates the displacement and velocity of each glyph. A JavaScript solver uses the same spring model on devices without a usable GPU adapter. The browser still shapes and draws the letters as DOM text. The engine label reports which path ran. <a href="https://developer.mozilla.org/en-US/docs/Web/API/GPU">WebGPU reference</a></p>
     </details>
   </main>
+  <script type="module" src="../chrome.js"></script>
   <script type="module" src="../gravity.js"></script>
 </body>
 </html>

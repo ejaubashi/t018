@@ -243,5 +243,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .relay-word[data-arrived] { animation: none; }
+  :root:not([data-lab-motion="full"]) .relay-word[data-arrived] { animation: none; }
 }
+
+:root[data-lab-motion="reduce"] .relay-word[data-arrived] { animation: none; }

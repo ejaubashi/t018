@@ -1,3 +1,5 @@
+import { labMotion } from "./motion.js";
+
 import { openReading, openingWords, readingName, readings, samePages, words } from "./relay-store.js";
 
 const stage = document.querySelector("#relay-stage");
@@ -13,7 +15,7 @@ const undo = document.querySelector("#relay-undo");
 const reset = document.querySelector("#relay-reset");
 const notice = document.querySelector("#relay-notice");
 const log = document.querySelector("#relay-events");
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const reducedMotion = labMotion;
 const panels = Object.fromEntries(readings.map(name => [name, stage.querySelector('[data-reading="' + name + '"]')]));
 const view = new URLSearchParams(location.search).get("view");
 const mime = "application/x-typefield-relay";
@@ -301,6 +303,9 @@ form.addEventListener("submit", event => {
 
 undo.addEventListener("click", () => commit({ type: "undo", revision: snapshot.revision }));
 reset.addEventListener("click", () => commit({ type: "reset" }));
+reducedMotion.addEventListener("change", () => {
+  if (reducedMotion.matches) transition?.skipTransition();
+});
 
 store = await openReading();
 accept(store.initial, false);

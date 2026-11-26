@@ -1,111 +1,155 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="editorial">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#171916">
-  <title>Eleven text experiments · Typefield Lab</title>
+  <meta name="theme-color" content="#f1ede3">
+  <title>Typefield Lab · Experiments with live text</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="lab.css">
-  <link rel="stylesheet" href="frontier.css">
-  <link rel="stylesheet" href="studies.css">
+  <link rel="stylesheet" href="editorial.css">
+  <link rel="stylesheet" href="chrome.css">
 </head>
-<body class="catalog">
+<body class="editorial-catalog">
+  <a href="#experiments" class="lab-skip">Skip to experiments</a>
   <header class="shell bar">
     <a class="lab-name" href="../">← Typefield</a>
-    <span class="micro">Eleven text experiments</span>
   </header>
   <main class="shell">
-    <header class="catalog-heading">
-      <h1>Text<br>behaves<span>.</span></h1>
-      <p>Compose across two windows. Turn a sentence until another appears.</p>
-    </header>
-    <nav aria-label="New experiments">
-      <ol class="feature-grid">
+    <section class="edition-heading" aria-labelledby="edition-title">
+      <header>
+        <h1 id="edition-title">Typefield<br>Lab<span>.</span></h1>
+        <p>Experiments in reading, composing, and shaping text in the browser.</p>
+      </header>
+      <div class="cover-score">
+        <p class="micro">Score preview</p>
+        <p id="cover-line">I left the<br>light on.</p>
+        <div class="cover-actions">
+          <button type="button" id="cover-play" hidden>Play the sentence</button>
+          <a href="score/">Open Score ↗</a>
+        </div>
+      </div>
+    </section>
+    <section class="directory" id="experiments" aria-labelledby="directory-title">
+      <div class="directory-heading">
+        <h2 id="directory-title">Experiments</h2>
+        <div class="directory-filters choice" role="group" aria-label="Filter experiments" hidden>
+          <button type="button" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-filter="read" aria-pressed="false">Read</button>
+          <button type="button" data-filter="compose" aria-pressed="false">Compose</button>
+          <button type="button" data-filter="shape" aria-pressed="false">Shape</button>
+        </div>
+      </div>
+      <p class="micro directory-count" role="status">13 experiments</p>
+      <ol class="edition-directory">
         <li>
-          <a href="relay/" class="feature-link theme-relay">
-            <span class="feature-name">Relay</span>
-            <span class="feature-prompt">Compose two readings across synchronized windows.</span>
-            <span class="feature-arrow" aria-hidden="true">↗</span>
+          <a href="score/" class="catalog-entry" data-category="compose">
+            <span class="entry-name">Score</span>
+            <span class="entry-category micro">Compose</span>
+            <span class="entry-action">Set the duration and silence of each word.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
           </a>
         </li>
         <li>
-          <a href="facet/" class="feature-link theme-facet">
-            <span class="feature-name">Facet</span>
-            <span class="feature-prompt">Turn a 3D text print to find its two readings.</span>
-            <span class="feature-arrow" aria-hidden="true">↗</span>
+          <a href="measure/" class="catalog-entry" data-category="shape">
+            <span class="entry-name">Measure</span>
+            <span class="entry-category micro">Shape</span>
+            <span class="entry-action">Inspect where the browser ends each line.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
           </a>
         </li>
         <li>
-          <a href="cast/" class="feature-link theme-cast">
-            <span class="feature-name">Cast</span>
-            <span class="feature-prompt">Draw the contours of a font and take the typeface with you.</span>
-            <span class="feature-arrow" aria-hidden="true">↗</span>
+          <a href="relay/" class="catalog-entry" data-category="compose">
+            <span class="entry-name">Relay</span>
+            <span class="entry-category micro">Compose</span>
+            <span class="entry-action">Move words between two synchronized windows.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
           </a>
         </li>
         <li>
-          <a href="frequency/" class="feature-link theme-frequency">
-            <span class="feature-name">Frequency</span>
-            <span class="feature-prompt">Turn sound into changing weight, width, and height.</span>
-            <span class="feature-arrow" aria-hidden="true">↗</span>
+          <a href="facet/" class="catalog-entry" data-category="read">
+            <span class="entry-name">Facet</span>
+            <span class="entry-category micro">Read</span>
+            <span class="entry-action">Turn a 3D print to find its two readings.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
           </a>
         </li>
         <li>
-          <a href="descent/" class="feature-link theme-descent">
-            <span class="feature-name">Descent</span>
-            <span class="feature-prompt">Follow a word into a chapter you can share.</span>
-            <span class="feature-arrow" aria-hidden="true">↗</span>
+          <a href="cast/" class="catalog-entry" data-category="shape">
+            <span class="entry-name">Cast</span>
+            <span class="entry-category micro">Shape</span>
+            <span class="entry-action">Redraw a font and export the typeface.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
           </a>
         </li>
         <li>
-          <a href="counterpoint/" class="feature-link theme-counterpoint">
-            <span class="feature-name">Counterpoint</span>
-            <span class="feature-prompt">Pair two fragments of testimony and question what they say together.</span>
-            <span class="feature-arrow" aria-hidden="true">↗</span>
+          <a href="frequency/" class="catalog-entry" data-category="shape">
+            <span class="entry-name">Frequency</span>
+            <span class="entry-category micro">Shape</span>
+            <span class="entry-action">Let a sound signal change the letterforms.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="descent/" class="catalog-entry" data-category="read">
+            <span class="entry-name">Descent</span>
+            <span class="entry-category micro">Read</span>
+            <span class="entry-action">Follow an underlined phrase into a chapter.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="counterpoint/" class="catalog-entry" data-category="read">
+            <span class="entry-name">Counterpoint</span>
+            <span class="entry-category micro">Read</span>
+            <span class="entry-action">Pair two passages and question their evidence.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="gravity/" class="catalog-entry" data-category="shape">
+            <span class="entry-name">Gravity</span>
+            <span class="entry-category micro">Shape</span>
+            <span class="entry-action">Pull a sentence apart and let its letters settle.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="fold/" class="catalog-entry" data-category="read">
+            <span class="entry-name">Fold</span>
+            <span class="entry-category micro">Read</span>
+            <span class="entry-action">Scroll to turn the planes of a sentence.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="underprint/" class="catalog-entry" data-category="read">
+            <span class="entry-name">Underprint</span>
+            <span class="entry-category micro">Read</span>
+            <span class="entry-action">Sweep a lens across a second reading.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="echo/" class="catalog-entry" data-category="compose">
+            <span class="entry-name">Echo</span>
+            <span class="entry-category micro">Compose</span>
+            <span class="entry-action">Replay changes and pauses from your own typing.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="exchange/" class="catalog-entry" data-category="compose">
+            <span class="entry-name">Exchange</span>
+            <span class="entry-category micro">Compose</span>
+            <span class="entry-action">Swap who acts in a sentence.</span>
+            <span class="entry-opening" aria-hidden="true">↗</span>
           </a>
         </li>
       </ol>
-    </nav>
-    <nav class="more-experiments" aria-labelledby="more-label">
-      <h2 id="more-label" class="micro">More experiments</h2>
-      <ol class="catalog-list">
-        <li>
-          <a class="catalog-row theme-gravity" href="gravity/">
-            <span class="catalog-name">Gravity</span>
-            <span class="catalog-prompt">Hold the text to pull its letters. Release and watch them find their places.</span>
-            <span class="catalog-open" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li>
-          <a class="catalog-row theme-fold" href="fold/">
-            <span class="catalog-name">Fold</span>
-            <span class="catalog-prompt">Scroll the sentence to turn four lines into a different reading.</span>
-            <span class="catalog-open" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li>
-          <a class="catalog-row theme-underprint" href="underprint/">
-            <span class="catalog-name">Underprint</span>
-            <span class="catalog-prompt">Sweep a lens across a sentence to find the one underneath.</span>
-            <span class="catalog-open" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li>
-          <a class="catalog-row theme-echo" href="echo/">
-            <span class="catalog-name">Echo</span>
-            <span class="catalog-prompt">Type a line, erase something, and replay the traces of your edits.</span>
-            <span class="catalog-open" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li>
-          <a class="catalog-row theme-exchange" href="exchange/">
-            <span class="catalog-name">Exchange</span>
-            <span class="catalog-prompt">Give a different word the lead and watch the sentence reorganize.</span>
-            <span class="catalog-open" aria-hidden="true">↗</span>
-          </a>
-        </li>
-      </ol>
-    </nav>
+    </section>
   </main>
+  <script type="module" src="chrome.js"></script>
+  <script type="module" src="edition.js"></script>
 </body>
 </html>

@@ -1,3 +1,5 @@
+import { labMotion } from "./motion.js";
+
 const stage = document.querySelector("#echo-stage");
 const textarea = document.querySelector("#echo-input");
 const current = document.querySelector("#echo-current");
@@ -7,7 +9,7 @@ const replay = document.querySelector("#echo-play");
 const example = document.querySelector("#echo-example");
 const clear = document.querySelector("#echo-clear");
 const status = document.querySelector("#echo-status");
-const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const motion = labMotion;
 const segmenter = typeof Intl.Segmenter === "function" ? new Intl.Segmenter() : undefined;
 const initial = { time: 0, text: "" };
 const tape = [initial];
@@ -161,4 +163,8 @@ clear.addEventListener("click", () => {
   status.textContent = "Recording cleared";
   controls();
   textarea.focus();
+});
+
+motion.addEventListener("change", () => {
+  if (motion.matches) traceAnimation?.cancel();
 });

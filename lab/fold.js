@@ -1,9 +1,11 @@
+import { labMotion } from "./motion.js";
+
 const scroller = document.querySelector("#fold-scroll");
 const slider = document.querySelector("#fold-angle");
 const turn = document.querySelector("#fold-turn");
 const reading = document.querySelector("#fold-reading");
 const panels = [...scroller.querySelectorAll(".fold-flap")];
-const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const motion = labMotion;
 const nativeTimeline = CSS.supports("animation-timeline: scroll()")
   && CSS.supports("animation-range: 0% 52%");
 let frame = 0;

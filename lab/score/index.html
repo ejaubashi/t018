@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171916">
+  <title>Score · Typefield Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../editorial.css">
+  <link rel="stylesheet" href="../chrome.css">
+</head>
+<body class="room theme-score">
+  <header class="shell bar">
+    <a class="lab-name" href="../">← Typefield Lab</a>
+    <nav class="room-nav micro" aria-label="Other experiments">
+      <a href="../exchange/">← Exchange</a>
+      <a href="../measure/">Measure →</a>
+    </nav>
+  </header>
+  <main class="shell">
+    <header class="room-heading">
+      <h1>Score</h1>
+      <p>Play the line, then select a word to change its duration, the silence after it, or its emphasis.</p>
+    </header>
+    <section class="instrument score-stage" aria-label="Reading preview">
+      <div class="score-stage-bar micro">
+        <span>Reading</span>
+        <span id="score-phase" aria-hidden="true">Ready</span>
+      </div>
+      <p id="score-line">I left the light on. It made the room look like it was waiting.</p>
+    </section>
+    <div class="score-workspace" id="score-workspace" hidden>
+      <div class="score-transport">
+        <button class="control primary" type="button" id="score-play">Play</button>
+        <label class="sr-only" for="score-position">Reading position</label>
+        <input type="range" id="score-position" min="0" max="1000" step="1" value="0">
+        <output class="micro" id="score-time" for="score-position" aria-hidden="true">0.00 / 0.00 s</output>
+      </div>
+      <div class="score-cue-nav">
+        <span class="micro" id="score-cues-label">Word cues</span>
+        <div class="choice">
+          <button class="lab-tool" type="button" id="score-previous">← Previous word</button>
+          <button class="lab-tool" type="button" id="score-next">Next word →</button>
+        </div>
+      </div>
+      <div class="score-cues" id="score-cues" role="group" aria-labelledby="score-cues-label">
+        <div id="score-track"></div>
+      </div>
+      <div class="score-properties">
+        <p class="micro" id="score-current-edit">Select a word cue</p>
+        <label class="text-control"><span class="micro">Duration (ms)</span><input type="number" min="100" max="2500" step="25" id="score-duration"></label>
+        <label class="text-control"><span class="micro">Silence after (ms)</span><input type="number" min="0" max="2000" step="25" id="score-rest"></label>
+        <button class="control" type="button" id="score-emphasis" aria-pressed="false">Emphasis</button>
+        <button class="control" type="button" id="score-share">Share this score</button>
+      </div>
+      <p class="micro score-notice" id="score-notice" role="status"></p>
+      <label class="score-share-field text-control" id="score-share-field" hidden><span class="micro">Score link</span><input id="score-link" type="url" readonly></label>
+      <details class="score-text">
+        <summary class="micro">Write your own line</summary>
+        <label for="score-input" class="sr-only">Your line</label>
+        <textarea id="score-input" rows="2" maxlength="240">I left the light on. It made the room look like it was waiting.</textarea>
+        <button class="control" type="button" id="score-apply">Set text</button>
+      </details>
+    </div>
+    <details class="implementation">
+      <summary class="micro">Implementation</summary>
+      <p>Each cue has a duration and a following silence. A monotonic clock sets the playhead and seeks the active word’s Web Animation to the same time. A shared link carries the text and exact cue timings. The current draft is saved in this browser. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Animation/currentTime">Web Animations current time</a></p>
+    </details>
+  </main>
+  <script type="module" src="../chrome.js"></script>
+  <script type="module" src="../score.js"></script>
+</body>
+</html>

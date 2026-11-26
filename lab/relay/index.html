@@ -7,13 +7,14 @@
   <title>Relay · Typefield Lab</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="../lab.css">
+  <link rel="stylesheet" href="../chrome.css">
   <link rel="stylesheet" href="../studies.css">
 </head>
 <body class="room theme-relay">
   <header class="shell bar">
     <a class="lab-name" href="../">← Typefield Lab</a>
     <nav class="room-nav micro" aria-label="Other experiments">
-      <a href="../exchange/">← Exchange</a>
+      <a href="../measure/">← Measure</a>
       <a href="../facet/">Facet →</a>
     </nav>
   </header>
@@ -73,6 +74,7 @@
       <p>Each word has a stable identity. IndexedDB commits moves and undo operations in transactions. BroadcastChannel tells other windows to read the new revision. Named View Transitions move the words between readings inside each window. Open both windows in the same browser profile to work on the same text. <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase/transaction">IndexedDB transactions</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel">BroadcastChannel</a></p>
     </details>
   </main>
+  <script type="module" src="../chrome.js"></script>
   <script type="module" src="../relay.js"></script>
 </body>
 </html>
