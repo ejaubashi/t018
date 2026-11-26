@@ -5,18 +5,28 @@ const filters = [...directory.querySelectorAll("[data-filter]")];
 const entries = [...document.querySelectorAll(".catalog-entry")];
 const count = document.querySelector(".directory-count");
 
+function showCategory(category) {
+  const choice = filters.some(filter => filter.dataset.filter === category) ? category : "all";
+  for (const filter of filters) filter.setAttribute("aria-pressed", String(filter.dataset.filter === choice));
+  const shown = entries.filter(entry => {
+    const visible = choice === "all" || entry.dataset.category === choice;
+    entry.closest("li").hidden = !visible;
+    return visible;
+  }).length;
+  count.textContent = shown + " experiments";
+}
+
 for (const button of filters) {
   button.addEventListener("click", () => {
     const choice = button.dataset.filter;
-    for (const filter of filters) filter.setAttribute("aria-pressed", String(filter === button));
-    const shown = entries.filter(entry => {
-      const visible = choice === "all" || entry.dataset.category === choice;
-      entry.closest("li").hidden = !visible;
-      return visible;
-    }).length;
-    count.textContent = shown + " experiments";
+    const url = new URL(location.href);
+    if (choice === "all") url.searchParams.delete("category");
+    else url.searchParams.set("category", choice);
+    history.replaceState(history.state, "", url);
+    showCategory(choice);
   });
 }
+showCategory(new URLSearchParams(location.search).get("category"));
 directory.hidden = false;
 
 const sample = document.querySelector(".cover-score");

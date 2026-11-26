@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en" data-motion="off">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171914">
+  <meta name="description" content="An interactive typography specimen. Move through letters, shape a variable font, and read between the words.">
+  <title>Typefield — An interactive type specimen</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="../fonts/archivo-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../style.css">
+  <script src="../typefield.js" defer></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#playground">Skip to playground</a>
+  <header class="site-header">
+    <div class="shell site-bar">
+      <a class="wordmark" href="#top">typefield<span>.</span></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../">Exhibit</a>
+        <a href="#playground">Playground</a>
+        <a href="#notes">Field notes</a>
+        <a href="../lab/">Lab</a>
+        <a href="../experiments/what-was-left-out.html">What Was Left Out</a>
+      </nav>
+      <button class="motion-button" id="motion-toggle" type="button" aria-label="Motion" hidden>Motion off</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="playground shell" id="playground" aria-labelledby="specimen-heading">
+      <p class="eyebrow">An interactive type specimen</p>
+      <div class="specimen">
+        <div class="type-stage" id="type-stage" data-mode="field">
+          <h1 class="specimen-title" id="specimen-heading" aria-label="Type has a pulse.">
+            <span class="type-line" aria-hidden="true">TYPE HAS</span>
+            <span class="type-line" aria-hidden="true">A PULSE.</span>
+          </h1>
+        </div>
+        <div class="specimen-guide" id="specimen-guide" hidden>
+          <p id="mode-hint">Hover or drag across the letters to push their weight.</p>
+          <button class="action" id="mode-action" type="button" aria-describedby="mode-hint">
+            <span id="action-label">Send a pulse</span><span aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="controls" id="specimen-controls" hidden>
+        <div class="mode-control">
+          <p class="eyebrow" id="mode-label">Experiment</p>
+          <div class="mode-buttons" role="group" aria-labelledby="mode-label">
+            <button type="button" data-mode="field" aria-pressed="true">Field</button>
+            <button type="button" data-mode="scramble" aria-pressed="false">Scramble</button>
+            <button type="button" data-mode="morph" aria-pressed="false">Morph</button>
+          </div>
+        </div>
+        <div class="axis-control">
+          <div class="axis-caption">
+            <label class="eyebrow" for="weight">Weight</label>
+            <output for="weight" id="weight-value" aria-hidden="true">820</output>
+          </div>
+          <input type="range" id="weight" min="200" max="900" value="820" step="1">
+        </div>
+        <div class="axis-control">
+          <div class="axis-caption">
+            <label class="eyebrow" for="width">Width</label>
+            <output for="width" id="width-value" aria-hidden="true">100%</output>
+          </div>
+          <input type="range" id="width" min="64" max="112" value="100" step="1">
+        </div>
+      </div>
+    </section>
+
+    <section class="notes-section" id="notes" aria-labelledby="notes-heading">
+      <div class="shell notes-layout">
+        <div class="notes-intro">
+          <h2 class="eyebrow" id="notes-heading">Field notes</h2>
+          <p class="notes-hint">Select an underlined word.</p>
+        </div>
+        <div class="reading-specimen">
+          <p class="reading-line"><button class="term" type="button" popovertarget="note-weight">Weight</button> gives words a voice.</p>
+          <p class="reading-line"><button class="term" type="button" popovertarget="note-width">Width</button> changes the pace.</p>
+          <p class="reading-line"><button class="term" type="button" popovertarget="note-space">Space</button> lets them breathe.</p>
+
+          <aside class="note-popover" id="note-weight" popover="auto" aria-labelledby="weight-note-label">
+            <h3 id="weight-note-label">Weight</h3>
+            <p>Weight changes the thickness of a letter’s strokes. A single variable font can move from a whisper to a shout.</p>
+            <button class="note-close" type="button" popovertarget="note-weight" popovertargetaction="hide">Close</button>
+          </aside>
+          <aside class="note-popover" id="note-width" popover="auto" aria-labelledby="width-note-label">
+            <h3 id="width-note-label">Width</h3>
+            <p>A width axis redraws letterforms as they expand or condense. Try the slider to see the proportions change.</p>
+            <button class="note-close" type="button" popovertarget="note-width" popovertargetaction="hide">Close</button>
+          </aside>
+          <aside class="note-popover" id="note-space" popover="auto" aria-labelledby="space-note-label">
+            <h3 id="space-note-label">Space</h3>
+            <p>Spacing changes where the eye pauses. Closely set letters read as a unit, while a wide gap can give the next word its own beat.</p>
+            <button class="note-close" type="button" popovertarget="note-space" popovertargetaction="hide">Close</button>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-bar">
+      <p>Set in Archivo and IBM Plex Mono.</p>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </footer>
+</body>
+</html>
