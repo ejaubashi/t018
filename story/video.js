@@ -1,8 +1,7 @@
-import { createStoryRenderer, loadStoryFonts, storyCanvas } from "./render.js";
-import { frameRate, movieLength, normalizeStory, storySize } from "./spec.js";
+import { createScoreRenderer, loadStoryFonts, storyCanvas } from "./render.js?v=2";
+import { frameRate, readScore, storySize, timelineOf } from "./spec.js?v=2";
 
 const { width, height } = storySize;
-const totalFrames = Math.round(movieLength * frameRate / 1000);
 const bitrate = 6_000_000;
 const softwareURL = new URL("./vendor/h264-mp4-encoder-1.0.12.js", import.meta.url);
 let softwareReady;
@@ -38,11 +37,12 @@ function loadSoftware() {
   return softwareReady;
 }
 
-async function renderFrames(story, renderer, addFrame, signal, progress) {
+async function renderFrames(score, renderer, addFrame, signal, progress) {
+  const totalFrames = Math.round(timelineOf(score).duration * frameRate / 1000);
   for (let index = 0; index < totalFrames; index += 1) {
     signal?.throwIfAborted();
     const seconds = index / frameRate;
-    renderer.paint(story, seconds * 1000);
+    renderer.paint(score, seconds * 1000);
     await addFrame(seconds);
     if (index % 4 === 0) {
       progress(index / totalFrames);
@@ -57,7 +57,7 @@ async function encodeNative(story, signal, progress) {
   const { BufferTarget, CanvasSource, Mp4OutputFormat, Output } = await import("./vendor/mediabunny-1.66.4.mjs");
   signal?.throwIfAborted();
   const canvas = storyCanvas();
-  const renderer = createStoryRenderer(canvas);
+  const renderer = createScoreRenderer(canvas);
   const target = new BufferTarget();
   const movie = new Output({ format: new Mp4OutputFormat({ fastStart: "in-memory" }), target });
   const track = new CanvasSource(canvas, { codec: "avc", keyFrameInterval: 1, bitrate });
@@ -89,7 +89,7 @@ async function encodeSoftware(story, signal, progress) {
     encoder.speed = 8;
     encoder.groupOfPictures = frameRate;
     encoder.initialize();
-    const renderer = createStoryRenderer(storyCanvas(), { readPixels: true });
+    const renderer = createScoreRenderer(storyCanvas(), { readPixels: true });
     await renderFrames(story, renderer, () => {
       encoder.addFrameRgba(renderer.ink.getImageData(0, 0, width, height).data);
     }, signal, progress);
@@ -101,7 +101,8 @@ async function encodeSoftware(story, signal, progress) {
 }
 
 export async function encodeStory(value, { signal, progress }) {
-  const story = normalizeStory(value);
+  const story = readScore(value);
+  if (!story) throw new Error("The sequence is invalid.");
   await loadStoryFonts();
   signal?.throwIfAborted();
   if (await nativeAVC()) {
@@ -118,7 +119,7 @@ export async function encodeStory(value, { signal, progress }) {
 function renderInWorker(story, signal, progress) {
   return new Promise((resolve, reject) => {
     signal.throwIfAborted();
-    const worker = new Worker(new URL("./video-worker.js", import.meta.url));
+    const worker = new Worker(new URL("./video-worker.js?v=2", import.meta.url));
     function finish(callback, value) {
       signal.removeEventListener("abort", abort);
       worker.terminate();

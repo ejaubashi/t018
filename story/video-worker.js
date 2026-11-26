@@ -1,6 +1,6 @@
 self.addEventListener("message", async ({ data }) => {
   try {
-    const { encodeStory } = await import("./video.js");
+    const { encodeStory } = await import("./video.js?v=2");
     const buffer = await encodeStory(data, {
       progress: value => self.postMessage({ type: "progress", value }),
     });

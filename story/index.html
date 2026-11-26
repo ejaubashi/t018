@@ -4,14 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#15131c">
-  <meta name="description" content="Make a vertical Typefield poster or motion video for Instagram Stories.">
+  <meta name="description" content="Compose a vertical film from a brief, edit optical scenes, and save the result for stories.">
+  <meta name="typefield-compose-endpoint" content="">
   <title>Story Studio · Typefield</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="../fonts/bricolage.css">
   <link rel="stylesheet" href="../exhibit/exhibit.css?v=5">
   <link rel="stylesheet" href="../exhibit/edition.css">
-  <link rel="stylesheet" href="story.css">
-  <script type="module" src="story.js"></script>
+  <link rel="stylesheet" href="story.css?v=2">
+  <script type="module" src="story.js?v=2"></script>
 </head>
 <body>
   <a class="skip" href="#story-title">Skip to Story Studio</a>
@@ -21,16 +22,51 @@
       <nav aria-label="Typefield navigation"><a href="../#exhibit" id="back-exhibit">Exhibit</a><a href="../lab/">Lab</a><span aria-current="page">Story Studio</span></nav>
     </div>
   </header>
-  <main class="shell story-shell">
+
+  <main class="shell story-shell" id="studio">
     <header class="story-heading">
       <h1 id="story-title" tabindex="-1">Story Studio<span>.</span></h1>
-      <p>Turn your word pair into a still or a 7.8-second film for Instagram Stories.</p>
+      <p>Start with a brief. Cut a vertical film entirely out of type.</p>
     </header>
 
-    <section class="story-preview" aria-labelledby="preview-label">
-      <div class="preview-head micro"><h2 id="preview-label">Preview</h2><span>1080 × 1920 · 9:16</span></div>
-      <div class="story-frame">
-        <canvas id="story-canvas" width="1080" height="1920" role="img" aria-label="Typefield story preview">Two readings, READ and MAKE.</canvas>
+    <form class="brief-form" id="brief-form">
+      <label for="brief">Creative brief</label>
+      <div class="brief-entry">
+        <textarea id="brief" rows="2" maxlength="240" placeholder="A night train arriving at dawn…" required></textarea>
+        <button class="studio-button primary" id="compose" type="submit" disabled>Compose <span aria-hidden="true">↗</span></button>
+      </div>
+      <div class="brief-feedback">
+        <button class="text-button" type="button" id="example" disabled>Try the night train brief</button>
+        <button class="text-button" type="button" id="cancel-compose" hidden>Cancel</button>
+        <span id="compose-status" role="status"></span>
+      </div>
+      <div class="draft" id="draft" hidden>
+        <p class="draft-heading">Draft <span id="draft-source"></span></p>
+        <ol id="draft-scenes"></ol>
+        <div class="action-row">
+          <button class="studio-button" type="button" id="use-draft">Use draft</button>
+          <button class="text-button" type="button" id="discard-draft">Discard</button>
+        </div>
+      </div>
+    </form>
+
+    <section class="monitor" aria-labelledby="monitor-title">
+      <div class="monitor-head micro">
+        <h2 id="monitor-title" tabindex="-1">Preview</h2>
+        <span>9:16 · 1080 × 1920</span>
+      </div>
+      <div class="monitor-view">
+        <div class="story-frame">
+          <canvas id="story-canvas" width="1080" height="1920" role="img" aria-label="Typefield story preview">A preview of your optical scenes.</canvas>
+          <div class="story-guides" id="story-guides" aria-hidden="true" hidden></div>
+        </div>
+      </div>
+      <div class="monitor-tools">
+        <div class="monitor-modes" role="group" aria-label="Preview mode">
+          <button type="button" data-mode="photo" aria-pressed="false">Photo</button>
+          <button type="button" data-mode="video" aria-pressed="true">Sequence</button>
+        </div>
+        <label class="guide-choice"><input id="guides" type="checkbox"> UI guides</label>
       </div>
       <div class="preview-transport" id="still-transport" hidden>
         <label for="story-angle">Viewing angle</label>
@@ -38,49 +74,74 @@
         <output for="story-angle" id="angle-value" aria-live="off">−45.0°</output>
       </div>
       <div class="preview-transport" id="video-transport" hidden>
-        <button type="button" class="preview-play" id="story-play">Play preview</button>
-        <label for="story-time" class="sr-only">Video position</label>
-        <input id="story-time" type="range" min="0" max="7800" step="10" value="0">
-        <output for="story-time" id="time-value" aria-live="off">0.0 s</output>
+        <button type="button" class="play-button" id="story-play">Play</button>
+        <label for="story-time" class="sr-only">Sequence position</label>
+        <input id="story-time" type="range" min="0" max="9000" step="10" value="0">
+        <output for="story-time" id="time-value" aria-live="off">0.00 / 9.0 s</output>
+      </div>
+      <div class="export-dock">
+        <div class="action-row">
+          <button class="studio-button primary" id="story-export" type="button" disabled>Make MP4</button>
+          <button class="text-button" id="capture-frame" type="button" hidden>Save frame PNG</button>
+          <a class="text-button studio-jump" href="#sequence-title">Edit scenes <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="encode-progress" id="encode-progress" hidden>
+          <progress id="story-progress" aria-label="Video export progress" value="0" max="100"></progress>
+          <button class="text-button" id="story-cancel" type="button">Cancel</button>
+        </div>
+        <div class="story-result action-row" id="story-result" hidden>
+          <a id="story-download" download>Download file</a>
+          <button class="text-button" id="story-share" type="button" hidden>Share file <span aria-hidden="true">↗</span></button>
+        </div>
+        <p class="story-status" id="story-status" role="status">Loading the preview…</p>
+        <noscript><p>Enable JavaScript to edit and export a sequence.</p></noscript>
       </div>
     </section>
 
-    <form class="story-form" id="story-form">
-      <fieldset class="story-inputs" id="story-inputs" disabled>
-        <legend class="sr-only">Story content and export format</legend>
-        <div class="story-words">
-          <label>First word<input name="first" value="READ" maxlength="6" pattern="[A-Za-z]{2,6}" required autocomplete="off" spellcheck="false" autocapitalize="characters" aria-describedby="story-word-rule"></label>
-          <label>Second word<input name="second" value="MAKE" maxlength="6" pattern="[A-Za-z]{2,6}" required autocomplete="off" spellcheck="false" autocapitalize="characters" aria-describedby="story-word-rule"></label>
-        </div>
-        <p class="word-rule" id="story-word-rule">Two to six letters A–Z per word.</p>
-        <label class="story-caption">Caption <span>Optional</span><textarea name="caption" maxlength="64" rows="2">Same letters. Different points of view.</textarea></label>
-        <fieldset class="story-choice story-ink">
-          <legend>Ink</legend>
-          <label><input name="ink" type="radio" value="amber" checked><span>Amber</span></label>
-          <label><input name="ink" type="radio" value="violet"><span>Violet</span></label>
-          <label><input name="ink" type="radio" value="paper"><span>Paper</span></label>
-        </fieldset>
-        <fieldset class="story-choice story-format">
-          <legend>Format</legend>
-          <label><input name="format" type="radio" value="photo" checked><span>Photo <small>PNG</small></span></label>
-          <label><input name="format" type="radio" value="video"><span>Video <small>MP4</small></span></label>
-        </fieldset>
-        <div class="story-actions">
-          <button class="export-button" id="story-export" type="submit">Download PNG <span aria-hidden="true">↓</span></button>
-          <button class="copy-button" id="story-copy" type="button" hidden>Copy story link</button>
-        </div>
-      </fieldset>
-      <div class="encode-progress" id="encode-progress" hidden>
-        <progress id="story-progress" aria-label="Video export progress" value="0" max="100"></progress>
-        <button class="copy-button" id="story-cancel" type="button">Cancel</button>
+    <section class="story-sequence" aria-labelledby="sequence-title">
+      <div class="section-heading">
+        <div><h2 id="sequence-title" tabindex="-1">Sequence</h2><p id="sequence-name" class="sequence-name"></p></div>
+        <button class="studio-button" id="add-scene" type="button" disabled><span aria-hidden="true">+</span> Scene</button>
       </div>
-      <div class="story-result" id="story-result" hidden>
-        <a id="story-download" download>Download file</a>
-        <button class="copy-button" id="story-share" type="button" hidden>Share file <span aria-hidden="true">↗</span></button>
+      <ol class="scene-rail" id="scene-rail" aria-label="Scenes"></ol>
+
+      <form class="story-form" id="story-form">
+        <fieldset class="scene-fields" id="story-inputs" disabled>
+          <legend id="scene-label">Scene 1</legend>
+          <div class="story-words">
+            <label>First word<input name="first" value="READ" maxlength="6" pattern="[A-Za-z]{2,6}" required autocomplete="off" spellcheck="false" autocapitalize="characters" aria-describedby="story-word-rule"></label>
+            <label>Second word<input name="second" value="MAKE" maxlength="6" pattern="[A-Za-z]{2,6}" required autocomplete="off" spellcheck="false" autocapitalize="characters" aria-describedby="story-word-rule"></label>
+          </div>
+          <p class="word-rule" id="story-word-rule">Two to six letters A–Z per word.</p>
+          <label class="story-caption">Caption <span>Optional</span><textarea name="caption" maxlength="64" rows="2"></textarea></label>
+
+          <div class="scene-settings">
+            <label><span id="motion-label">Motion</span><select name="motion" aria-labelledby="motion-label"></select></label>
+            <label><span id="transition-label">Transition</span><select name="transition" aria-labelledby="transition-label"></select></label>
+            <label>Length in seconds<input name="duration" type="number" min="1.8" max="7.8" step="0.1" required></label>
+          </div>
+          <fieldset class="story-ink">
+            <legend>Ink</legend>
+            <label><input name="ink" type="radio" value="amber" checked><span>Amber</span></label>
+            <label><input name="ink" type="radio" value="violet"><span>Violet</span></label>
+            <label><input name="ink" type="radio" value="paper"><span>Paper</span></label>
+          </fieldset>
+          <div class="action-row scene-actions">
+            <button class="text-button" id="move-up" type="button">Move earlier</button>
+            <button class="text-button" id="move-down" type="button">Move later</button>
+            <button class="text-button" id="remove-scene" type="button">Remove scene</button>
+            <a class="text-button studio-jump" href="#monitor-title">Preview <span aria-hidden="true">↑</span></a>
+          </div>
+        </fieldset>
+      </form>
+      <div class="recipe-tools action-row">
+        <button class="text-button" id="story-copy" type="button" hidden>Copy sequence link</button>
+        <button class="text-button" id="save-recipe" type="button" disabled>Save score JSON</button>
+        <button class="text-button" id="open-recipe" type="button" disabled>Open score JSON</button>
+        <input id="recipe-file" type="file" accept=".json,application/json" hidden>
       </div>
-      <p class="story-status" id="story-status" role="status">Loading the preview…</p>
-      <noscript><p>JavaScript is needed to preview and save your story.</p></noscript>
-    </form>
+      <p class="recipe-status" id="recipe-status" role="status"></p>
+    </section>
   </main>
 </body>
 </html>

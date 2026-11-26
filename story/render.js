@@ -1,6 +1,6 @@
 import { createLetterField, projectGlyphs } from "../exhibit/letter-field.js?v=3";
-import { clamp, limit, mix, scoreAt } from "../exhibit/kinetics.js";
-import { movieLength, storySize } from "./spec.js";
+import { clamp, exposures, lensPass, limit, mix, scoreAt, scoreDuration } from "../exhibit/kinetics.js";
+import { sceneAt, storySize, timelineOf, transitionDuration } from "./spec.js?v=2";
 
 const themes = {
   amber: {
@@ -39,7 +39,7 @@ export function loadStoryFonts() {
 export function storyCanvas() {
   return typeof OffscreenCanvas === "function"
     ? new OffscreenCanvas(width, height)
-    : document.createElement("canvas");
+    : Object.assign(document.createElement("canvas"), { width, height });
 }
 
 function sweepColor(first, last, progress) {
@@ -70,14 +70,28 @@ function captionLines(ink, caption, maxWidth) {
   return lines;
 }
 
-export function storyPose(story, time) {
-  return time === undefined ? { angle: story.angle } : scoreAt(clamp(time, 0, movieLength));
+function smooth(value) {
+  const t = clamp(value);
+  return t * t * (3 - 2 * t);
 }
 
-export function createStoryRenderer(canvas, { readPixels = false } = {}) {
-  canvas.width = width;
-  canvas.height = height;
-  const ink = canvas.getContext("2d", { alpha: false, willReadFrequently: readPixels });
+function scenePose(scene, time) {
+  if (time === undefined) return { angle: scene.angle };
+  const progress = clamp(time / scene.durationMs);
+  if (scene.motion === "hold") return { angle: scene.angle };
+  if (scene.motion === "prism") {
+    return { angle: mix(-limit, limit, smooth(progress)), lens: lensPass(progress) };
+  }
+  if (scene.motion === "echo") {
+    const turn = at => mix(limit, -limit, smooth(at / scene.durationMs));
+    const angle = turn(time);
+    return { angle, ghosts: exposures(angle, lag => turn(time - lag * 1.8)) };
+  }
+  return scoreAt(progress * scoreDuration);
+}
+
+function scenePainter(canvas) {
+  const ink = canvas.getContext("2d", { alpha: false });
   if (!ink) throw new Error("Canvas is unavailable in this browser.");
   const artwork = storyCanvas();
   let theme;
@@ -85,12 +99,12 @@ export function createStoryRenderer(canvas, { readPixels = false } = {}) {
   let pair;
   let glyphs;
 
-  function paint(story, time) {
-    const tones = themes[story.ink];
-    const nextPair = story.first + "/" + story.second;
+  function paint(scene, index, time) {
+    const tones = themes[scene.ink];
+    const nextPair = scene.first + "/" + scene.second;
     const changed = pair !== nextPair;
     if (changed) {
-      glyphs = projectGlyphs([story.first, story.second]);
+      glyphs = projectGlyphs([scene.first, scene.second]);
       pair = nextPair;
     }
     if (theme !== tones || changed) {
@@ -103,7 +117,7 @@ export function createStoryRenderer(canvas, { readPixels = false } = {}) {
       field.setGlyphs(glyphs);
     }
 
-    const pose = storyPose(story, time);
+    const pose = scenePose(scene, time);
     const progress = (pose.angle + limit) / (2 * limit);
     const accent = sweepColor(tones.first, tones.last, progress);
 
@@ -116,18 +130,25 @@ export function createStoryRenderer(canvas, { readPixels = false } = {}) {
     ink.font = '30px "IBM Plex Mono", monospace';
     ink.fillText("TYPEFIELD", margin, 305);
     ink.textAlign = "right";
-    ink.fillText(time === undefined ? "STILL" : "MOTION SCORE", width - margin, 305);
+    ink.fillText("SCENE " + String(index + 1).padStart(2, "0"), width - margin, 305);
     ink.textAlign = "left";
 
-    ink.font = "780 169px Bricolage, Archivo, sans-serif";
+    ink.font = "800 172px Bricolage, Archivo, sans-serif";
     ink.fillStyle = tones.text;
-    ink.fillText("Two", margin - 7, 520, plate.width);
+    ink.strokeStyle = accent;
+    ink.lineWidth = 2.2;
+    ink.globalAlpha = 0.42;
+    ink.strokeText(scene.first, margin + 20 * progress, 525 - 12 * progress, plate.width - 25);
+    ink.globalAlpha = 1;
+    ink.fillText(scene.first, margin - 7, 520, plate.width - 25);
     ink.fillStyle = accent;
-    ink.fillText("readings.", margin - 7, 665, plate.width);
+    ink.textAlign = "right";
+    ink.fillText(scene.second, width - margin + 5, 668, plate.width);
+    ink.textAlign = "left";
     ink.font = "450 39px Archivo, sans-serif";
     ink.fillStyle = tones.subtle;
-    for (const [index, line] of captionLines(ink, story.caption, plate.width).entries()) {
-      ink.fillText(line, margin, 743 + index * 47, plate.width);
+    for (const [lineIndex, line] of captionLines(ink, scene.caption, plate.width).entries()) {
+      ink.fillText(line, margin, 743 + lineIndex * 47, plate.width);
     }
 
     ink.fillStyle = tones.panel;
@@ -152,12 +173,99 @@ export function createStoryRenderer(canvas, { readPixels = false } = {}) {
 
     ink.fillStyle = tones.text;
     ink.font = '32px "IBM Plex Mono", monospace';
-    ink.fillText(story.first + "  /  " + story.second, margin, 1537, plate.width * 0.76);
+    ink.fillText(scene.first + "  /  " + scene.second, margin, 1537, plate.width * 0.76);
     const degrees = (pose.angle < 0 ? "−" : pose.angle > 0 ? "+" : "") + Math.abs(pose.angle).toFixed(1) + "°";
     ink.fillStyle = accent;
     ink.textAlign = "right";
     ink.fillText(degrees, width - margin, 1537);
     ink.textAlign = "left";
+  }
+
+  return paint;
+}
+
+function registerCut(ink, incoming, progress) {
+  const strips = 12;
+  ink.save();
+  ink.beginPath();
+  for (let strip = 0; strip < strips; strip += 1) {
+    const reach = width * smooth(progress * 1.38 - strip / (strips - 1) * 0.38);
+    ink.rect(strip % 2 ? width - reach : 0, strip * height / strips, reach, height / strips);
+  }
+  ink.clip();
+  ink.drawImage(incoming, 0, 0);
+  ink.restore();
+}
+
+function apertureCut(mask, incoming, scene, progress) {
+  const ink = mask.getContext("2d");
+  ink.clearRect(0, 0, width, height);
+  ink.font = "800 " + Math.round(292 + 392 * progress) + "px Bricolage, Archivo, sans-serif";
+  ink.textAlign = "center";
+  ink.globalAlpha = smooth(progress * 4);
+  const travel = mix(-width * 0.37, width * 0.18, progress);
+  const rows = Array.from({ length: 4 }, (_, row) => [
+    width / 2 + (row % 2 ? -travel : travel), (row + 0.65) * height / 3.56,
+  ]);
+  for (const [x, y] of rows) ink.fillText(scene.first, x, y, width * 1.3);
+
+  // Widen the opening until the next scene completely fills the frame.
+  const reach = smooth((progress - 0.38) / 0.62);
+  ink.globalAlpha = 1;
+  ink.fillRect(0, height / 2 - reach * height / 2, width, reach * height);
+  ink.globalCompositeOperation = "source-in";
+  ink.drawImage(incoming, 0, 0);
+  ink.globalCompositeOperation = "source-over";
+  ink.strokeStyle = themes[scene.ink].first;
+  ink.lineWidth = 2.7;
+  ink.globalAlpha = 0.38 * Math.sin(progress * Math.PI);
+  for (const [x, y] of rows) ink.strokeText(scene.first, x, y, width * 1.3);
+  ink.globalAlpha = 1;
+}
+
+export function createScoreRenderer(canvas, { readPixels = false } = {}) {
+  const ink = canvas.getContext("2d", { alpha: false, willReadFrequently: readPixels });
+  if (!ink) throw new Error("Canvas is unavailable in this browser.");
+  const picture = storyCanvas();
+  const paintScene = scenePainter(picture);
+  let outgoing;
+  let paintOutgoing;
+  let mask;
+  let frozenIndex = -1;
+  let currentScore;
+  let timing;
+
+  function paint(score, time, stillIndex = 0) {
+    if (score !== currentScore) {
+      timing = timelineOf(score);
+      currentScore = score;
+      frozenIndex = -1;
+    }
+    const index = time === undefined ? stillIndex : sceneAt(timing.starts, clamp(time, 0, timing.duration));
+    const scene = score.scenes[index];
+    const within = time === undefined ? undefined : time - timing.starts[index];
+    paintScene(scene, index, within);
+    if (!index || within === undefined || within >= transitionDuration || scene.transition === "cut") {
+      ink.drawImage(picture, 0, 0);
+      return;
+    }
+    if (!outgoing) {
+      outgoing = storyCanvas();
+      paintOutgoing = scenePainter(outgoing);
+    }
+    if (frozenIndex !== index) {
+      const prior = score.scenes[index - 1];
+      paintOutgoing(prior, index - 1, prior.durationMs);
+      frozenIndex = index;
+    }
+    ink.drawImage(outgoing, 0, 0);
+    const progress = within / transitionDuration;
+    if (scene.transition === "register") registerCut(ink, picture, progress);
+    else {
+      mask ??= storyCanvas();
+      apertureCut(mask, picture, scene, progress);
+      ink.drawImage(mask, 0, 0);
+    }
   }
 
   return { paint, ink };
