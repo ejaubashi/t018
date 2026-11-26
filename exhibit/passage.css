@@ -1,0 +1,40 @@
+@view-transition { navigation: auto; }
+
+@keyframes passage-out {
+  to { opacity: 0.3; }
+}
+@keyframes passage-in {
+  from { clip-path: polygon(0 108%, 100% 94%, 100% 100%, 0 100%); }
+  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+@keyframes projection-in {
+  from { clip-path: polygon(0 0, 100% 0, 100% 7%, 0 0); }
+  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+:root[data-passage]::view-transition { pointer-events: none; }
+:root[data-passage]::view-transition-group(root) { animation-duration: 680ms; }
+:root[data-passage]::view-transition-old(root) {
+  display: block;
+  animation: passage-out 680ms both;
+  mix-blend-mode: normal;
+}
+:root[data-passage]::view-transition-new(root) {
+  animation: passage-in 680ms cubic-bezier(.27,.76,.18,1) both;
+  mix-blend-mode: normal;
+}
+:root[data-passage="projection"]::view-transition-new(root) { animation-name: projection-in; }
+:root[data-passage]::view-transition-group(typefield-lab),
+:root[data-passage]::view-transition-group(typefield-projection) {
+  z-index: 2;
+  animation-duration: 680ms;
+  animation-timing-function: cubic-bezier(.23,.78,.19,1);
+}
+:root[data-passage]::view-transition-image-pair(typefield-lab),
+:root[data-passage]::view-transition-image-pair(typefield-projection) { isolation: isolate; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-lab-motion="full"])::view-transition-group(*),
+  :root:not([data-lab-motion="full"])::view-transition-old(*),
+  :root:not([data-lab-motion="full"])::view-transition-new(*) { animation-duration: 0s; }
+}

@@ -45,7 +45,8 @@
   line-height: 0.84;
 }
 
-#edition-title span { color: #62722d; }
+#edition-title .edition-lab-word { display: inline-block; }
+#edition-title .edition-stop { color: #62722d; }
 .edition-heading header > p { max-width: 38ch; color: var(--muted); font-size: clamp(0.99rem, 1.6vw, 1.22rem); }
 
 .cover-score {

@@ -27,6 +27,8 @@ jobs:
           mkdir -p _site/experiments
           cp -R index.html style.css typefield.js fonts exhibit lab playground _site/
           cp experiments/what-was-left-out.html _site/experiments/
+          cd design/figma
+          zip "$GITHUB_WORKSPACE/_site/typefield-figma.zip" manifest.json code.js README.md
 
       - name: Upload the site
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5

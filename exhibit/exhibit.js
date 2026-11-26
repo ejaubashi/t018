@@ -1,6 +1,7 @@
 import { labMotion } from "../lab/motion.js";
 import { projectWords, rows } from "./optics.js";
 import { createLetterField, glyphPoint } from "./letter-field.js";
+import { alignOpeningAnchor, recastProjection, writeFold } from "./chapters.js";
 import {
   carry, clamp, exposureLag, exposures, glide, lensPass, limit, mix,
   scoreAt, scoreDuration, waveDuration,
@@ -543,6 +544,7 @@ stage.addEventListener("lostpointercapture", release);
 function showWords() {
   firstInput.value = words[0];
   secondInput.value = words[1];
+  writeFold(words);
   poseButtons[0].textContent = words[0] + " −45°";
   poseButtons[1].textContent = words[1] + " +45°";
   shape();
@@ -561,17 +563,22 @@ form.addEventListener("submit", event => {
     (invalid === 0 ? firstInput : secondInput).focus();
     return;
   }
-  finishScore();
-  const url = new URL(location.href);
-  url.searchParams.set("first", next[0]);
-  url.searchParams.set("second", next[1]);
-  history.replaceState(history.state, "", url);
-  words = next;
-  placeAngle(-limit);
-  resetEffects();
-  showWords();
-  message.textContent = "Projection built. This page’s address keeps both words.";
-  stage.scrollIntoView({ block: "nearest" });
+  recastProjection(() => {
+    finishScore();
+    const url = new URL(location.href);
+    url.searchParams.set("first", next[0]);
+    url.searchParams.set("second", next[1]);
+    url.hash = "exhibit";
+    history.replaceState(history.state, "", url);
+    words = next;
+    placeAngle(-limit);
+    resetEffects();
+    stage.removeAttribute("data-effects");
+    stage.removeAttribute("data-live-field");
+    placeScene();
+    showWords();
+    message.textContent = "Projection built. This page’s address keeps both words.";
+  });
 });
 
 words = readingsFromAddress();
@@ -594,3 +601,4 @@ motion.hidden = false;
 document.querySelector("#exhibit-controls").hidden = false;
 document.querySelector("#motion-controls").hidden = false;
 document.querySelector("#change-words").hidden = false;
+alignOpeningAnchor();

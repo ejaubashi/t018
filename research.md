@@ -2,6 +2,14 @@
 
 Browser support checked on 25 November 2026 against MDN Browser Compatibility Data 8.1.10. The versions below are the earliest desktop releases recorded for each feature. [Compatibility dataset](https://registry.npmjs.org/@mdn/browser-compat-data/8.1.10)
 
+## Motion between sections
+
+The project reads as three sections. The last word in Exhibit crosses a slanted edge into Studio, where visitors can change it. Submitting the form carries the edited word back into the sculpture. The Lab word opens the actual directory and appears at its new size in the next document. The source and destination stay in the regular page flow. [Seam Transitions](https://github.com/codrops/SeamTransitions) · [View Transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API)
+
+The fold uses a CSS View Timeline with an entry-to-cover range so it scrubs equally in either direction. On browsers without that range, the two sheets use their measured position in the viewport. Named view transitions connect the form to its result and the Lab entrance to its catalog. Reduced motion uses the final composition and direct navigation. [Animation range](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/animation-range) · [PageSwapEvent](https://developer.mozilla.org/en-US/docs/Web/API/PageSwapEvent) · [PageRevealEvent](https://developer.mozilla.org/en-US/docs/Web/API/PageRevealEvent)
+
+The editable Figma storyboard contains desktop and mobile stops for the fold, Studio, the rebuilt sculpture, and the Lab handoff. Its Smart Animate links show the change between frames. [Figma storyboard](https://ejaubashi.github.io/t018/typefield-figma.zip)
+
 ## Motion studies
 
 Researched on 26 November 2026 for **Two readings**. The November Codrops character studies use separate treatments for groups of letters, including WebGL distortions. Gooey Sticky Menu uses the position of an edge to control when a deformation stretches and breaks. In Typefield, the corresponding inputs are angular speed, distance from the pointer, and time since a strike. The words give the motion a recognizable starting point and a readable ending. [Text Character Animations](https://github.com/codrops/TextCharacterAnimations/tree/ac0fe97a4e4f786ef5d514d7030b6eb5855da05b) · [Gooey Sticky Menu](https://github.com/codrops/GooeyStickyMenu)

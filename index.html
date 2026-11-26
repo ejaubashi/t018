@@ -1,34 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="chapter-site">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f1ede3">
-  <meta name="description" content="Typefield is a laboratory for live text. Turn a single cloud of characters to see two words.">
+  <meta name="description" content="An exhibition in live text. Turn the sculpture, make a projection, and explore Typefield Lab.">
   <title>Two readings · Typefield</title>
   <link rel="icon" href="data:,">
   <link rel="preload" href="fonts/archivo-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="exhibit/exhibit.css?v=2">
-  <script type="module" src="exhibit/exhibit.js?v=2"></script>
+  <link rel="stylesheet" href="exhibit/exhibit.css?v=3">
+  <link rel="stylesheet" href="exhibit/passage.css">
+  <script type="module" blocking="render" src="exhibit/passage.js"></script>
+  <script type="module" src="exhibit/exhibit.js?v=3"></script>
 </head>
 <body>
   <a class="skip" href="#exhibit-title">Skip to the exhibit</a>
-  <header class="shell masthead">
-    <a class="brand" href="./" aria-label="Typefield home">typefield<span>.</span></a>
-    <nav aria-label="Main navigation">
-      <a href="playground/">Playground</a>
-      <a href="lab/">Lab index <span aria-hidden="true">↗</span></a>
-    </nav>
-    <button class="plain-button" id="motion" type="button" aria-pressed="false" hidden>Reduce motion</button>
+  <header class="masthead">
+    <div class="shell masthead-inner">
+      <a class="brand" href="#opening" aria-label="Typefield home">typefield<span>.</span></a>
+      <nav aria-label="Page sections">
+        <a href="#opening" data-section="exhibit" aria-current="location">Exhibit</a>
+        <a href="#studio" data-section="studio">Studio</a>
+        <a href="#lab" data-section="lab">Lab</a>
+      </nav>
+      <button class="plain-button" id="motion" type="button" aria-pressed="false" hidden>Reduce motion</button>
+    </div>
+    <div class="reading-progress" aria-hidden="true"></div>
   </header>
 
-  <main class="shell">
-    <section class="opening" aria-labelledby="exhibit-title">
+  <main>
+    <section class="opening shell" id="opening" data-chapter="exhibit" aria-labelledby="exhibit-title">
       <header class="opening-title">
-        <h1 id="exhibit-title">Two readings<span>.</span></h1>
-        <p>One cloud of characters, two readable angles. Drag the type to turn it, or choose a motion study.</p>
+        <h1 id="exhibit-title" tabindex="-1">Two readings<span>.</span></h1>
+        <p>One cloud of characters. Two readable angles. Drag the type or choose a motion study below.</p>
       </header>
-      <div class="exhibit" id="exhibit" role="group" aria-label="A rotating cloud of text" aria-describedby="exhibit-reading">
+      <div class="exhibit" id="exhibit" tabindex="-1" role="group" aria-label="A rotating cloud of text" aria-describedby="exhibit-reading">
         <div class="exhibit-top micro">
           <span id="exhibit-view">First projection</span>
           <span id="exhibit-count"></span>
@@ -68,31 +74,48 @@
           <button class="plain-button" id="score-close" type="button">Close score</button>
         </div>
       </div>
+      <div class="chapter-exit"><a href="#studio">Make your own projection <span aria-hidden="true">↓</span></a></div>
     </section>
 
-    <div class="workbench">
-      <details class="change-words" id="change-words" hidden>
-        <summary>Make your own projection</summary>
-        <form id="word-form">
-          <label class="micro">First word<input name="first" id="first-word" type="text" value="READ" maxlength="6" autocomplete="off" spellcheck="false" autocapitalize="characters" required></label>
-          <label class="micro">Second word<input name="second" id="second-word" type="text" value="MAKE" maxlength="6" autocomplete="off" spellcheck="false" autocapitalize="characters" required></label>
-          <button class="plain-button build" id="build" type="submit">Build the object</button>
-        </form>
-        <p class="micro word-note" id="word-note" role="status">Use two to six letters A–Z per word.</p>
-      </details>
-      <nav class="lab-entrances" aria-label="Explore Typefield Lab" id="lab-entrances">
-        <a data-door="read" href="lab/?category=read#experiments">Read <span aria-hidden="true">↗</span></a>
-        <a data-door="compose" href="lab/?category=compose#experiments">Compose <span aria-hidden="true">↗</span></a>
-        <a data-door="shape" href="lab/?category=shape#experiments">Shape <span aria-hidden="true">↗</span></a>
-      </nav>
-    </div>
-    <footer class="site-foot">
-      <details>
-        <summary>How the projection works</summary>
-        <p>The browser samples two text outlines and positions the same characters to match both. Momentum turns that 3D cloud. Lens and Resonance displace individual letters, and Exposure draws earlier views of the cloud. <a href="https://github.com/ejaubashi/t018/blob/main/research.md#motion-studies">Motion research and sources</a></p>
-      </details>
-      <a href="lab/">All 13 lab experiments <span aria-hidden="true">↗</span></a>
-    </footer>
+    <section class="studio" data-chapter="studio" aria-labelledby="studio-title">
+      <div class="type-fold" id="type-fold" aria-hidden="true">
+        <div class="fold-plane fold-arrival"><span id="fold-second">MAKE</span></div>
+        <div class="fold-plane fold-departure"><span id="fold-first">READ</span></div>
+      </div>
+      <div class="shell studio-inner" id="studio" tabindex="-1">
+        <header>
+          <h2 id="studio-title">Make the next reading<span>.</span></h2>
+          <p>Put two words into one sculpture. The first becomes readable from the left, the second from the right.</p>
+        </header>
+        <div class="change-words" id="change-words" hidden>
+          <form id="word-form" aria-describedby="word-note">
+            <label class="micro">First word<input name="first" id="first-word" type="text" value="READ" maxlength="6" autocomplete="off" spellcheck="false" autocapitalize="characters" required></label>
+            <label class="micro">Second word<input name="second" id="second-word" type="text" value="MAKE" maxlength="6" autocomplete="off" spellcheck="false" autocapitalize="characters" required></label>
+            <button class="plain-button build" id="build" type="submit">Build the object <span aria-hidden="true">↑</span></button>
+          </form>
+          <p class="micro word-note" id="word-note" role="status">Use two to six letters A–Z per word.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-chapter" id="lab" data-chapter="lab" aria-labelledby="lab-title" tabindex="-1">
+      <div class="shell lab-threshold">
+        <p class="micro">13 experiments with live text</p>
+        <h2 id="lab-title"><a href="lab/" aria-label="Enter Typefield Lab"><span class="lab-word" data-lab-word>Lab<span>.</span></span><span class="lab-arrow" aria-hidden="true">↗</span></a></h2>
+        <nav class="lab-entrances" aria-label="Explore Typefield Lab" id="lab-entrances">
+          <a data-door="read" href="lab/?category=read#experiments">Read <span aria-hidden="true">↗</span></a>
+          <a data-door="compose" href="lab/?category=compose#experiments">Compose <span aria-hidden="true">↗</span></a>
+          <a data-door="shape" href="lab/?category=shape#experiments">Shape <span aria-hidden="true">↗</span></a>
+        </nav>
+      </div>
+    </section>
   </main>
+  <footer class="site-foot shell">
+    <details>
+      <summary>How the projection works</summary>
+      <p>The browser samples two text outlines and positions the same characters to match both. The studies turn, bend, displace, and reprint those characters. <a href="https://github.com/ejaubashi/t018/blob/main/research.md#motion-studies">Motion research and sources</a></p>
+    </details>
+    <nav aria-label="More Typefield links"><a href="typefield-figma.zip" download>Figma storyboard</a><a href="playground/">Playground</a><a href="#opening">Back to Exhibit ↑</a></nav>
+  </footer>
 </body>
 </html>
