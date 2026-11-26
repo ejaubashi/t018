@@ -4,6 +4,10 @@ Browser support checked on 25 November 2026 against MDN Browser Compatibility Da
 
 Five studies of the project’s layout and navigation are published alongside the exhibition. The live proof sheet rearranges the existing chapters and uses named view transitions where available. [Design studies](https://ejaubashi.github.io/t018/exhibit/design/) · [Live proof sheet](https://ejaubashi.github.io/t018/?view=proof)
 
+## Optical edition
+
+The viewing angle now sets the width and weight of the opening title, the color of the controls, and the position of a diagonal exposure on the plate. The nine-panel fold uses the outgoing word’s alpha mask to reveal an overprint in the gaps. In Studio, the field being edited determines the live impression behind the form. Hovering or focusing each Lab category previews titles in that directory. [Visual references and design decisions](https://ejaubashi.github.io/t018/exhibit/design/#visual-references)
+
 ## Motion between sections
 
 The project reads as three sections. Between Exhibit and Studio, nine hinged planes each carry a slice of two full-width words. At their resting angles, the slices register as complete readings. During the turn the viewer sees both sides and the gaps between the panels. Submitting the Studio form carries the edited word back into the sculpture and changes both printed faces. The Lab word moves into the directory heading across documents. [Seam Transitions](https://github.com/codrops/SeamTransitions) · [View Transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API)

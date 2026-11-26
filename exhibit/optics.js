@@ -21,7 +21,15 @@ function outline(word) {
     padding + metrics.actualBoundingBoxLeft * scaleX,
     padding + metrics.actualBoundingBoxAscent * scaleY);
   context.fillText(word, 0, 0);
-  return context.getImageData(0, 0, width, height).data;
+  return context;
+}
+
+export function wordMask(word) {
+  return 'url("' + outline(word).canvas.toDataURL("image/png") + '")';
+}
+
+function pixels(word) {
+  return outline(word).getImageData(0, 0, width, height).data;
 }
 
 function scan(image, row) {
@@ -50,8 +58,8 @@ function shuffled(indices, seed) {
 }
 
 export function projectWords(first, second) {
-  const front = outline(first);
-  const reverse = outline(second);
+  const front = pixels(first);
+  const reverse = pixels(second);
   const seed = [...first + second].reduce((value, letter) => (Math.imul(value, 31) + letter.charCodeAt(0)) >>> 0, 17);
   const points = [];
 

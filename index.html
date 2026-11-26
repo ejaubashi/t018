@@ -3,16 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f1ede3">
+  <meta name="theme-color" content="#15131c">
   <meta name="description" content="An exhibition in live text. Turn the sculpture, make a projection, and explore Typefield Lab.">
   <title>Two readings · Typefield</title>
   <link rel="icon" href="data:,">
   <link rel="preload" href="fonts/archivo-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/bricolage-grotesque-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/bricolage.css">
   <link rel="stylesheet" href="exhibit/exhibit.css?v=5">
   <link rel="stylesheet" href="exhibit/passage.css">
+  <link rel="stylesheet" href="exhibit/edition.css">
   <link rel="stylesheet" href="exhibit/proof.css?v=2">
   <script type="module" blocking="render" src="exhibit/passage.js"></script>
-  <script type="module" src="exhibit/exhibit.js?v=5"></script>
+  <script type="module" src="exhibit/exhibit.js?v=6"></script>
 </head>
 <body>
   <a class="skip" href="#exhibit-title">Skip to the exhibit</a>
@@ -41,8 +44,10 @@
       <div class="opening-cover">
         <header class="opening-title">
           <h1 id="exhibit-title" tabindex="-1">Two <span class="title-line">readings<span class="title-stop">.</span></span></h1>
-          <p>One cloud of characters. Two readable angles.<span class="exhibit-instruction"> Drag the type to turn it.</span></p>
-          <a class="turn-link" href="#type-fold">Turn the page <span aria-hidden="true">↓</span></a>
+          <div class="opening-caption">
+            <p>One cloud of characters. Two readable angles.<span class="exhibit-instruction"> Drag the type to turn it.</span></p>
+            <a class="turn-link" href="#type-fold">Turn the page <span aria-hidden="true">↓</span></a>
+          </div>
         </header>
         <div class="exhibit" id="exhibit" tabindex="-1" role="group" aria-label="A rotating cloud of text" aria-describedby="exhibit-reading">
           <div class="exhibit-top micro">
@@ -94,6 +99,7 @@
         <div class="fold-board">
           <div class="fold-art" aria-hidden="true">
             <div class="fold-still"><span id="fold-first" hidden>READ</span><span id="fold-second">MAKE</span></div>
+            <div class="fold-overprint" id="fold-overprint"></div>
             <div class="fold-leaves" id="fold-leaves"></div>
           </div>
           <div class="fold-controls shell" id="fold-controls" hidden>
@@ -107,6 +113,7 @@
         </div>
       </div>
       <div class="shell studio-inner" id="studio" tabindex="-1">
+        <div class="studio-impression" aria-hidden="true"><span id="draft-impression">MAKE</span></div>
         <header>
           <h2 id="studio-title">Make the next reading<span>.</span></h2>
           <p>Put two words into one sculpture. The first becomes readable from the left, the second from the right.</p>
@@ -128,10 +135,15 @@
         <p class="micro">13 experiments with live text</p>
         <h2 id="lab-title"><a href="lab/" aria-label="Enter Typefield Lab"><span class="lab-word" data-lab-word>Lab<span>.</span></span><span class="lab-arrow" aria-hidden="true">↗</span></a></h2>
         <nav class="lab-entrances" aria-label="Explore Typefield Lab" id="lab-entrances">
-          <a data-door="read" href="lab/?category=read#experiments">Read <span aria-hidden="true">↗</span></a>
-          <a data-door="compose" href="lab/?category=compose#experiments">Compose <span aria-hidden="true">↗</span></a>
-          <a data-door="shape" href="lab/?category=shape#experiments">Shape <span aria-hidden="true">↗</span></a>
+          <a data-door="read" href="lab/?category=read#experiments" aria-describedby="preview-read">Read <span aria-hidden="true">↗</span></a>
+          <a data-door="compose" href="lab/?category=compose#experiments" aria-describedby="preview-compose">Compose <span aria-hidden="true">↗</span></a>
+          <a data-door="shape" href="lab/?category=shape#experiments" aria-describedby="preview-shape">Shape <span aria-hidden="true">↗</span></a>
         </nav>
+        <div class="lab-preview" aria-hidden="true">
+          <p id="preview-read">Descent<span> / </span>Underprint<span> / </span>Fold</p>
+          <p id="preview-compose">Score<span> / </span>Relay<span> / </span>Echo</p>
+          <p id="preview-shape">Measure<span> / </span>Cast<span> / </span>Gravity</p>
+        </div>
       </div>
       <a class="proof-link" href="#lab" data-proof-link hidden>Open Lab <span aria-hidden="true">↗</span></a>
     </section>

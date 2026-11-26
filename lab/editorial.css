@@ -19,6 +19,35 @@
 }
 
 .editorial-catalog main { padding-bottom: clamp(3rem, 6vw, 5.8rem); }
+.lab-edition {
+  color-scheme: dark;
+  --ink: #15131c;
+  --paper: #fff4e5;
+  --muted: #cbc0d2;
+  --line: #51475d;
+  --accent: #c9bff9;
+  --display: Bricolage, Archivo, Arial, sans-serif;
+}
+.lab-edition #edition-title {
+  font-family: var(--display);
+  font-weight: 790;
+  font-variation-settings: "opsz" 96, "wght" 790, "wdth" 98;
+  letter-spacing: -0.083em;
+}
+.lab-edition #edition-title .edition-stop { color: var(--accent); }
+.lab-edition .cover-score { background: #c9bff9; color: #251735; }
+.lab-edition #cover-line {
+  font-family: var(--display);
+  font-weight: 755;
+  font-variation-settings: "opsz" 79, "wght" 755, "wdth" 92;
+  letter-spacing: -0.073em;
+}
+.lab-edition .cover-actions button { background: #271d38; color: #fff4e5; }
+.lab-edition .cover-actions button:hover { background: #4e3672; }
+.lab-edition .cover-score[data-playing] .cover-word { color: #5d487b; }
+.lab-edition .cover-score[data-playing] .cover-word[data-active] { color: #251735; box-shadow: inset 0 -0.042em #603994; }
+.lab-edition .catalog-entry:is(:hover,:focus-visible) { background: #2a2037; }
+.lab-edition .entry-name { font-family: var(--display); }
 .edition-heading {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);

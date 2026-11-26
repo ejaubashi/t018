@@ -1,7 +1,7 @@
 import { labMotion } from "../lab/motion.js";
-import { projectWords, rows } from "./optics.js";
-import { createLetterField, glyphPoint } from "./letter-field.js";
-import { alignOpeningAnchor, recastProjection, writeFold } from "./chapters.js";
+import { projectWords, rows } from "./optics.js?v=2";
+import { createLetterField, glyphPoint } from "./letter-field.js?v=2";
+import { alignOpeningAnchor, recastProjection, writeFold } from "./chapters.js?v=2";
 import { initializeProof } from "./proof.js";
 import {
   carry, clamp, exposureLag, exposures, glide, lensPass, limit, mix,
@@ -12,6 +12,7 @@ const legacy = new Set(["#playground", "#notes"]);
 if (legacy.has(location.hash)) location.replace(new URL("playground/" + location.hash, location.href));
 
 const stage = document.querySelector("#exhibit");
+const poster = document.querySelector("#opening");
 const scene = document.querySelector("#exhibit-scene");
 const fallback = document.querySelector("#exhibit-fallback");
 const view = document.querySelector("#exhibit-view");
@@ -25,6 +26,7 @@ const entrances = document.querySelector("#lab-entrances");
 const form = document.querySelector("#word-form");
 const firstInput = document.querySelector("#first-word");
 const secondInput = document.querySelector("#second-word");
+const draftImpression = document.querySelector("#draft-impression");
 const message = document.querySelector("#word-note");
 const studyButtons = [...document.querySelectorAll("[data-study]")];
 const studyHint = document.querySelector("#study-hint");
@@ -172,7 +174,9 @@ function placeAngle(value) {
   const next = clamp(value, -limit, limit);
   if (next === angle) return;
   angle = next;
-  stage.style.setProperty("--rotation-progress", (angle + limit) / (2 * limit));
+  const progress = (angle + limit) / (2 * limit);
+  stage.style.setProperty("--rotation-progress", progress);
+  poster.style.setProperty("--press-position", progress);
   syncAngle();
 }
 
@@ -542,9 +546,17 @@ stage.addEventListener("pointerup", release);
 stage.addEventListener("pointercancel", release);
 stage.addEventListener("lostpointercapture", release);
 
+function printDraft(field) {
+  const text = field.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 6);
+  draftImpression.textContent = text;
+  draftImpression.parentElement.dataset.side = field === firstInput ? "first" : "second";
+  draftImpression.parentElement.toggleAttribute("data-long", text.length > 4);
+}
+
 function showWords() {
   firstInput.value = words[0];
   secondInput.value = words[1];
+  printDraft(secondInput);
   writeFold(words);
   poseButtons[0].textContent = words[0] + " −45°";
   poseButtons[1].textContent = words[1] + " +45°";
@@ -553,6 +565,11 @@ function showWords() {
   syncAngle();
   showStudy();
   queueFrame();
+}
+
+for (const input of [firstInput, secondInput]) {
+  input.addEventListener("input", () => printDraft(input));
+  input.addEventListener("focus", () => printDraft(input));
 }
 
 form.addEventListener("submit", event => {

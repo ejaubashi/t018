@@ -4,7 +4,7 @@ const cell = 64;
 const atlasFontSize = 44;
 const columns = 13;
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const inks = ["#f1eddb", "#ffb69b", "#a3cfff"];
+const inks = ["#ffe1a7", "#ffae92", "#c4abff"];
 
 function glyphAtlas() {
   const width = cell * columns;

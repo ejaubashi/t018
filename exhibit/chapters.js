@@ -1,5 +1,6 @@
 import { labMotion } from "../lab/motion.js";
 import { clamp, mix } from "./kinetics.js";
+import { wordMask } from "./optics.js?v=2";
 
 const root = document.documentElement;
 const masthead = document.querySelector(".masthead");
@@ -15,6 +16,7 @@ const foldPosition = document.querySelector("#fold-position");
 const foldPercent = document.querySelector("#fold-percent");
 const foldFirst = document.querySelector("#fold-first");
 const foldSecond = document.querySelector("#fold-second");
+const overprint = document.querySelector("#fold-overprint");
 const exhibit = document.querySelector("#exhibit");
 const sourceWord = document.querySelector("#first-word");
 const projectionWord = document.querySelector("#exhibit-reading");
@@ -158,6 +160,13 @@ export function writeFold(words) {
   foldSecond.textContent = words[1];
   letters.forEach((faces, index) => faces.forEach(face => { face.textContent = words[index]; }));
   fold.toggleAttribute("data-long", Math.max(words[0].length, words[1].length) > 4);
+  overprint.textContent = words[1];
+  try {
+    overprint.style.setProperty("--impression", wordMask(words[0]));
+    overprint.setAttribute("data-registered", "");
+  } catch {
+    overprint.removeAttribute("data-registered");
+  }
 }
 
 export function alignOpeningAnchor() {

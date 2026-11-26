@@ -45,6 +45,8 @@
 .study-references dt { font: 755 1.14rem/1.25 Archivo, Arial, sans-serif; }
 .study-references dd { margin: 0.55rem 0 0; max-width: 62ch; color: var(--muted); }
 .study-references dd a { color: #34368c; }
+.visual-evidence { padding-block-end: 0; }
+.visual-example-link { margin-top: 1.15rem; color: #34368c; font: 0.79rem/1.45 var(--mono); }
 
 .study-proposals > h2 { margin-bottom: clamp(1.1rem, 2.8vw, 2.8rem); }
 .study-proposals article { padding-block: clamp(1.25rem, 3.3vw, 3.8rem); border-top: 1px solid var(--rule); }
