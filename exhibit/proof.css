@@ -118,6 +118,10 @@
   :root[data-proof] .studio-inner p { max-width: 26ch; font-size: 0.87rem; }
 }
 @media (max-width: 23rem) {
+  .masthead-inner { column-gap: 0.45rem; }
+  .masthead .brand { font-size: 1.34rem; }
+  .masthead-actions { gap: 0.3rem; }
+  .masthead-actions button { padding-inline: 0.34rem; font-size: 0.63rem; }
   :root[data-proof] main > section { padding: 0.7rem; }
   :root[data-proof] #studio-title { font-size: 1.9rem; }
   :root[data-proof] #lab-title { font-size: 3.65rem; }
