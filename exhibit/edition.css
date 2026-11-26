@@ -161,6 +161,8 @@
 .chapter-site .studio .build { background: #2a1b31; color: #ffe7d4; border-color: #2a1b31; }
 .chapter-site .studio .build:hover { background: #512b4c; color: #fff0e2; }
 .chapter-site .studio :focus-visible { outline-color: #713d64; }
+.chapter-site .story-launch { display: inline-block; margin-top: 1rem; color: #432a40; font: 0.77rem/1.35 var(--mono); }
+.chapter-site .story-launch:hover { color: #29182e; }
 .chapter-site .fold-controls :focus-visible { outline-color: #ffb477; }
 
 .chapter-site .lab-threshold > p { color: #462f65; }

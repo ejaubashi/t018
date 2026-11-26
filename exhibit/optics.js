@@ -5,7 +5,7 @@ export const rows = 22;
 const diagonal = Math.SQRT1_2;
 
 function outline(word) {
-  const canvas = document.createElement("canvas");
+  const canvas = typeof document === "undefined" ? new OffscreenCanvas(width, height) : document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext("2d", { willReadFrequently: true });

@@ -1,4 +1,5 @@
 import { clamp, limit, waveDuration } from "./kinetics.js";
+import { projectWords } from "./optics.js?v=3";
 
 const cell = 64;
 const atlasFontSize = 44;
@@ -6,9 +7,9 @@ const columns = 13;
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const inks = ["#ffe1a7", "#ffae92", "#c4abff"];
 
-function glyphAtlas() {
+function glyphAtlas(colors) {
   const width = cell * columns;
-  const height = cell * 2 * inks.length;
+  const height = cell * 2 * colors.length;
   const atlas = typeof OffscreenCanvas === "function"
     ? new OffscreenCanvas(width, height)
     : Object.assign(document.createElement("canvas"), { width, height });
@@ -18,7 +19,7 @@ function glyphAtlas() {
   ink.textAlign = "center";
   const metrics = ink.measureText("H");
   const baseline = (metrics.fontBoundingBoxAscent - metrics.fontBoundingBoxDescent) / 2;
-  inks.forEach((color, tone) => {
+  colors.forEach((color, tone) => {
     ink.fillStyle = color;
     for (let index = 0; index < alphabet.length; index += 1) {
       const x = (index % columns + 0.5) * cell;
@@ -29,9 +30,9 @@ function glyphAtlas() {
   return atlas;
 }
 
-export function createLetterField(canvas) {
+export function createLetterField(canvas, { colors = inks, pixelRatio = Math.min(2, globalThis.devicePixelRatio || 1) } = {}) {
   const ink = canvas.getContext("2d");
-  const atlas = ink && glyphAtlas();
+  const atlas = ink && glyphAtlas(colors);
   if (!atlas) return null;
 
   let dimensions;
@@ -39,13 +40,12 @@ export function createLetterField(canvas) {
 
   function measure(next) {
     dimensions = next;
-    const ratio = Math.min(2, window.devicePixelRatio || 1);
-    const width = Math.round(next.width * ratio);
-    const height = Math.round(next.height * ratio);
+    const width = Math.round(next.width * pixelRatio);
+    const height = Math.round(next.height * pixelRatio);
     if (canvas.width === width && canvas.height === height) return;
     canvas.width = width;
     canvas.height = height;
-    ink.setTransform(ratio, 0, 0, ratio, 0, 0);
+    ink.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   }
 
   function setGlyphs(points) {
@@ -135,7 +135,7 @@ export function createLetterField(canvas) {
   };
 }
 
-export function glyphPoint(point, letter, index) {
+function glyphPoint(point, letter, index) {
   const code = alphabet.indexOf(letter);
   return {
     ...point,
@@ -144,4 +144,11 @@ export function glyphPoint(point, letter, index) {
     row: Math.floor(code / columns) * cell,
     density: 0.62 + 0.38 * ((index * 19) % 31) / 30,
   };
+}
+
+export function projectGlyphs(words) {
+  const marks = words.join("");
+  return projectWords(...words).map((point, index) => glyphPoint(
+    point, marks[(index * 5 + Math.floor(index / 11)) % marks.length], index,
+  ));
 }

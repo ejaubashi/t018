@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" class="chapter-site">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15131c">
+  <meta name="description" content="Make a vertical Typefield poster or motion video for Instagram Stories.">
+  <title>Story Studio · Typefield</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../fonts/bricolage.css">
+  <link rel="stylesheet" href="../exhibit/exhibit.css?v=5">
+  <link rel="stylesheet" href="../exhibit/edition.css">
+  <link rel="stylesheet" href="story.css">
+  <script type="module" src="story.js"></script>
+</head>
+<body>
+  <a class="skip" href="#story-title">Skip to Story Studio</a>
+  <header class="story-masthead">
+    <div class="shell story-masthead-inner">
+      <a class="brand" href="../" aria-label="Typefield home">typefield<span>.</span></a>
+      <nav aria-label="Typefield navigation"><a href="../#exhibit" id="back-exhibit">Exhibit</a><a href="../lab/">Lab</a><span aria-current="page">Story Studio</span></nav>
+    </div>
+  </header>
+  <main class="shell story-shell">
+    <header class="story-heading">
+      <h1 id="story-title" tabindex="-1">Story Studio<span>.</span></h1>
+      <p>Turn your word pair into a still or a 7.8-second film for Instagram Stories.</p>
+    </header>
+
+    <section class="story-preview" aria-labelledby="preview-label">
+      <div class="preview-head micro"><h2 id="preview-label">Preview</h2><span>1080 × 1920 · 9:16</span></div>
+      <div class="story-frame">
+        <canvas id="story-canvas" width="1080" height="1920" role="img" aria-label="Typefield story preview">Two readings, READ and MAKE.</canvas>
+      </div>
+      <div class="preview-transport" id="still-transport" hidden>
+        <label for="story-angle">Viewing angle</label>
+        <input id="story-angle" type="range" min="-45" max="45" step="0.5" value="-45">
+        <output for="story-angle" id="angle-value" aria-live="off">−45.0°</output>
+      </div>
+      <div class="preview-transport" id="video-transport" hidden>
+        <button type="button" class="preview-play" id="story-play">Play preview</button>
+        <label for="story-time" class="sr-only">Video position</label>
+        <input id="story-time" type="range" min="0" max="7800" step="10" value="0">
+        <output for="story-time" id="time-value" aria-live="off">0.0 s</output>
+      </div>
+    </section>
+
+    <form class="story-form" id="story-form">
+      <fieldset class="story-inputs" id="story-inputs" disabled>
+        <legend class="sr-only">Story content and export format</legend>
+        <div class="story-words">
+          <label>First word<input name="first" value="READ" maxlength="6" pattern="[A-Za-z]{2,6}" required autocomplete="off" spellcheck="false" autocapitalize="characters" aria-describedby="story-word-rule"></label>
+          <label>Second word<input name="second" value="MAKE" maxlength="6" pattern="[A-Za-z]{2,6}" required autocomplete="off" spellcheck="false" autocapitalize="characters" aria-describedby="story-word-rule"></label>
+        </div>
+        <p class="word-rule" id="story-word-rule">Two to six letters A–Z per word.</p>
+        <label class="story-caption">Caption <span>Optional</span><textarea name="caption" maxlength="64" rows="2">Same letters. Different points of view.</textarea></label>
+        <fieldset class="story-choice story-ink">
+          <legend>Ink</legend>
+          <label><input name="ink" type="radio" value="amber" checked><span>Amber</span></label>
+          <label><input name="ink" type="radio" value="violet"><span>Violet</span></label>
+          <label><input name="ink" type="radio" value="paper"><span>Paper</span></label>
+        </fieldset>
+        <fieldset class="story-choice story-format">
+          <legend>Format</legend>
+          <label><input name="format" type="radio" value="photo" checked><span>Photo <small>PNG</small></span></label>
+          <label><input name="format" type="radio" value="video"><span>Video <small>MP4</small></span></label>
+        </fieldset>
+        <div class="story-actions">
+          <button class="export-button" id="story-export" type="submit">Download PNG <span aria-hidden="true">↓</span></button>
+          <button class="copy-button" id="story-copy" type="button" hidden>Copy story link</button>
+        </div>
+      </fieldset>
+      <div class="encode-progress" id="encode-progress" hidden>
+        <progress id="story-progress" aria-label="Video export progress" value="0" max="100"></progress>
+        <button class="copy-button" id="story-cancel" type="button">Cancel</button>
+      </div>
+      <div class="story-result" id="story-result" hidden>
+        <a id="story-download" download>Download file</a>
+        <button class="copy-button" id="story-share" type="button" hidden>Share file <span aria-hidden="true">↗</span></button>
+      </div>
+      <p class="story-status" id="story-status" role="status">Loading the preview…</p>
+      <noscript><p>JavaScript is needed to preview and save your story.</p></noscript>
+    </form>
+  </main>
+</body>
+</html>

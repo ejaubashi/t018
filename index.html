@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="exhibit/edition.css">
   <link rel="stylesheet" href="exhibit/proof.css?v=2">
   <script type="module" blocking="render" src="exhibit/passage.js"></script>
-  <script type="module" src="exhibit/exhibit.js?v=6"></script>
+  <script type="module" src="exhibit/exhibit.js?v=7"></script>
 </head>
 <body>
   <a class="skip" href="#exhibit-title">Skip to the exhibit</a>
@@ -26,6 +26,7 @@
         <a href="#opening" data-section="exhibit" aria-current="location">Exhibit</a>
         <a href="#studio" data-section="studio">Studio</a>
         <a href="#lab" data-section="lab">Lab</a>
+        <a href="story/" data-story-link>Story Studio</a>
       </nav>
       <div class="masthead-actions">
         <button class="plain-button" id="proof-toggle" type="button" aria-pressed="false" hidden>Proof sheet</button>
@@ -125,6 +126,7 @@
             <button class="plain-button build" id="build" type="submit">Build the object <span aria-hidden="true">↑</span></button>
           </form>
           <p class="micro word-note" id="word-note" role="status">Use two to six letters A–Z per word.</p>
+          <a class="story-launch" href="story/" data-story-link>Export the current projection <span aria-hidden="true">↗</span></a>
         </div>
       </div>
       <a class="proof-link" href="#studio" data-proof-link hidden>Open Studio <span aria-hidden="true">↗</span></a>

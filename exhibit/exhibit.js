@@ -1,6 +1,6 @@
 import { labMotion } from "../lab/motion.js";
-import { projectWords, rows } from "./optics.js?v=2";
-import { createLetterField, glyphPoint } from "./letter-field.js?v=2";
+import { rows } from "./optics.js?v=3";
+import { createLetterField, projectGlyphs } from "./letter-field.js?v=3";
 import { alignOpeningAnchor, recastProjection, writeFold } from "./chapters.js?v=2";
 import { initializeProof } from "./proof.js";
 import {
@@ -18,6 +18,7 @@ const fallback = document.querySelector("#exhibit-fallback");
 const view = document.querySelector("#exhibit-view");
 const count = document.querySelector("#exhibit-count");
 const reading = document.querySelector("#exhibit-reading");
+const storyLinks = [...document.querySelectorAll("[data-story-link]")];
 const degrees = document.querySelector("#exhibit-angle");
 const slider = document.querySelector("#angle");
 const poseButtons = [...document.querySelectorAll("[data-pose]")];
@@ -117,10 +118,7 @@ function shape() {
   count.textContent = "";
   renderer?.setGlyphs([]);
   try {
-    const marks = words.join("");
-    const points = projectWords(...words).map((point, index) => glyphPoint(
-      point, marks[(index * 5 + Math.floor(index / 11)) % marks.length], index,
-    ));
+    const points = projectGlyphs(words);
     if (!points.length) return;
     const fragment = document.createDocumentFragment();
     for (const glyph of points) {
@@ -167,6 +165,10 @@ function syncAngle() {
   for (const button of poseButtons) {
     const pressed = String(Number(button.dataset.pose) === angle);
     if (button.getAttribute("aria-pressed") !== pressed) button.setAttribute("aria-pressed", pressed);
+  }
+  const storyAddress = "story/?" + new URLSearchParams({ first: words[0], second: words[1], angle: step });
+  for (const link of storyLinks) {
+    if (link.getAttribute("href") !== storyAddress) link.setAttribute("href", storyAddress);
   }
 }
 
