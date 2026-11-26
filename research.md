@@ -2,6 +2,22 @@
 
 Browser support checked on 25 November 2026 against MDN Browser Compatibility Data 8.1.10. The versions below are the earliest desktop releases recorded for each feature. [Compatibility dataset](https://registry.npmjs.org/@mdn/browser-compat-data/8.1.10)
 
+## Motion studies
+
+Researched on 26 November 2026 for **Two readings**. The November Codrops character studies use separate treatments for groups of letters, including WebGL distortions. Gooey Sticky Menu uses the position of an edge to control when a deformation stretches and breaks. In Typefield, the corresponding inputs are angular speed, distance from the pointer, and time since a strike. The words give the motion a recognizable starting point and a readable ending. [Text Character Animations](https://github.com/codrops/TextCharacterAnimations/tree/ac0fe97a4e4f786ef5d514d7030b6eb5855da05b) · [Gooey Sticky Menu](https://github.com/codrops/GooeyStickyMenu)
+
+| Study | Finding and implementation |
+| --- | --- |
+| Momentum | Coalesced Pointer Events recover positions sampled between dispatches. Typefield estimates release speed over the last 88 ms and gives a critically damped spring that velocity. The scene can settle at either readable angle or anywhere between them. Browsers without coalesced samples use the dispatched events. [Pointer Events Level 3](https://www.w3.org/TR/pointerevents3/#dom-pointerevent-getcoalescedevents) · [Motion spring reference](https://github.com/motiondivision/motion/blob/main/packages/motion-dom/src/animation/generators/spring.ts) |
+| Lens | Imbrizi’s interactive particles use a local influence field to make the pointer affect nearby marks. In Typefield, distance sets the reach, and the character’s 3D depth sets how far it slips sideways. Separating warm and cool copies around a letter makes that refraction visible. [Interactive Particles](https://github.com/brunoimbrizi/interactive-particles) |
+| Resonance | Each strike creates an expanding wave with a Gaussian envelope and a cosine crest. A second strike adds its displacement to the first at every letter. Where the crests meet, their push can strengthen or cancel. The waveform runs on elapsed time so it carries the same distance at a given time across refresh rates. |
+| Exposure | A trace is easier to read when its offsets track the actual turn. Typefield keeps a short history and draws three positions from 68, 152, and 245 ms earlier. The traces change direction with the gesture and clear once those earlier angles catch up. |
+| Motion score | Web Animations exposes `currentTime` for seeking while paused. The score follows that model with an elapsed-time function that computes the camera, lens, waves, and exposure from the same playhead. Scrubbing backward to a time produces the same image as arriving there during playback. [Animation.currentTime](https://developer.mozilla.org/en-US/docs/Web/API/Animation/currentTime) |
+
+The stable sculpture uses CSS 3D and DOM text. During a turn or warp, the motion renderer projects the same 3D coordinates and reuses cached glyphs from an `OffscreenCanvas` atlas, with a detached canvas fallback. This keeps the moving text in one drawing surface and avoids recomputing over a thousand DOM transforms per frame. The renderer rests when the scene settles. The desktop compatibility data records `getCoalescedEvents()` in Chrome 58, Firefox 59, and Safari 18.2, and `OffscreenCanvas` in Chrome 69, Firefox 105, and Safari 16.4. [OffscreenCanvas](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas) · [PointerEvent data](https://github.com/mdn/browser-compat-data/blob/main/api/PointerEvent.json) · [OffscreenCanvas data](https://github.com/mdn/browser-compat-data/blob/main/api/OffscreenCanvas.json)
+
+The score starts on request. Each study has a keyboard-operable demonstration. Reduced motion keeps direct angle control, still versions of the optical effects, and manual seeking through the score. [WCAG 2.2 Animation from Interactions](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html)
+
 ## Design direction
 
 Build a kinetic type specimen. Give the hero a single oversized sentence, then let readers change its weight, width, and composition. Use a quiet editorial section to reward scrolling. Typefield pairs Archivo’s broad letterforms with small IBM Plex Mono control labels. Near-black, warm paper, and an acid-green accent make the reading section feel distinct from the playground. [Archivo](https://github.com/Omnibus-Type/Archivo) · [IBM Plex](https://github.com/IBM/plex)

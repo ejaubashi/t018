@@ -1,5 +1,10 @@
 import { labMotion } from "../lab/motion.js";
 import { projectWords, rows } from "./optics.js";
+import { createLetterField, glyphPoint } from "./letter-field.js";
+import {
+  carry, clamp, exposureLag, exposures, glide, lensPass, limit, mix,
+  scoreAt, scoreDuration, waveDuration,
+} from "./kinetics.js";
 
 const legacy = new Set(["#playground", "#notes"]);
 if (legacy.has(location.hash)) location.replace(new URL("playground/" + location.hash, location.href));
@@ -12,40 +17,93 @@ const count = document.querySelector("#exhibit-count");
 const reading = document.querySelector("#exhibit-reading");
 const degrees = document.querySelector("#exhibit-angle");
 const slider = document.querySelector("#angle");
-const buttons = [...document.querySelectorAll("[data-pose]")];
-const sweep = document.querySelector("#sweep");
+const poseButtons = [...document.querySelectorAll("[data-pose]")];
 const motion = document.querySelector("#motion");
 const entrances = document.querySelector("#lab-entrances");
 const form = document.querySelector("#word-form");
 const firstInput = document.querySelector("#first-word");
 const secondInput = document.querySelector("#second-word");
 const message = document.querySelector("#word-note");
-const canAnimate = "registerProperty" in CSS && typeof stage.animate === "function";
+const studyButtons = [...document.querySelectorAll("[data-study]")];
+const studyHint = document.querySelector("#study-hint");
+const studyAction = document.querySelector("#study-action");
+const playScore = document.querySelector("#sweep");
+const scoreControls = document.querySelector("#score-controls");
+const scoreTime = document.querySelector("#score-time");
+const scoreClock = document.querySelector("#score-clock");
+const scoreClose = document.querySelector("#score-close");
+
 const defaults = ["READ", "MAKE"];
 const valid = /^[A-Z]{2,6}$/u;
+const studies = {
+  momentum: {
+    action: "Fling the type",
+    hint: "Drag and release. The faster you move, the farther the letters coast.",
+    still: "Drag the artwork for direct control, or jump to the other reading.",
+    stillAction: "Turn to the other side",
+  },
+  lens: {
+    action: "Pass the lens",
+    hint: "Move across the letters, or drag a finger through them. The lens bends and splits the type.",
+    still: "Click or tap the artwork to place a still lens.",
+    stillAction: "Show a still lens",
+  },
+  resonance: {
+    action: "Strike the type",
+    hint: "Tap anywhere in the artwork. Strike it again before the first wave fades to cross two waves.",
+    still: "Click or tap the artwork to place a still wave.",
+    stillAction: "Show a still wave",
+  },
+  exposure: {
+    action: "Turn with exposure",
+    hint: "Turn the sculpture. Three earlier angles linger as separate impressions.",
+    still: "Overlay three fixed angles on the present reading.",
+    stillAction: "Show an exposure",
+  },
+};
+
 let words = defaults;
-let angle = -45;
-let animation;
+let angle = -limit;
+let sceneAngle = -limit;
+let study = "momentum";
+let bounds;
+let renderer;
 let frame = 0;
-let drag;
+let rotation;
+let gesture;
+let lens = { x: 0.5, y: 0.5, power: 0 };
+let lensTarget;
+let lensStart;
+let lastLensFrame;
+let strikes = [];
+let stillExposure = false;
+let historyOfAngles = [];
+let lastTurn = -Infinity;
+let scoreOpen = false;
+let scorePosition = 0;
+let scoreOrigin;
 
 function readingsFromAddress() {
   const params = new URLSearchParams(location.search);
-  const a = params.get("first")?.toUpperCase();
-  const b = params.get("second")?.toUpperCase();
-  return valid.test(a ?? "") && valid.test(b ?? "") ? [a, b] : defaults;
+  const first = params.get("first")?.toUpperCase();
+  const second = params.get("second")?.toUpperCase();
+  return valid.test(first ?? "") && valid.test(second ?? "") ? [first, second] : defaults;
 }
 
-function size() {
+function measure() {
   const width = stage.clientWidth;
   const height = stage.clientHeight;
   const artWidth = width * 0.86;
   const artHeight = Math.min(height * 0.59, width * 0.315);
   const fontSize = Math.max(5, Math.min(18, artHeight * 1.22 / rows));
+  const maxPitch = Math.min(13, 23 * height / width);
+  bounds = { width, height, artWidth, artHeight, fontSize, maxPitch };
   stage.style.setProperty("--world-width", artWidth + "px");
   stage.style.setProperty("--world-height", artHeight + "px");
   stage.style.setProperty("--glyph-size", fontSize + "px");
-  stage.style.setProperty("--max-pitch", Math.min(13, 23 * height / width) + "deg");
+  stage.style.setProperty("--max-pitch", maxPitch + "deg");
+  renderer?.measure(bounds);
+  queueFrame();
 }
 
 function shape() {
@@ -53,32 +111,36 @@ function shape() {
   stage.removeAttribute("data-points");
   scene.replaceChildren();
   count.textContent = "";
+  renderer?.setGlyphs([]);
   try {
-    const points = projectWords(...words);
-    if (!points.length) return;
     const marks = words.join("");
+    const points = projectWords(...words).map((point, index) => glyphPoint(
+      point, marks[(index * 5 + Math.floor(index / 11)) % marks.length], index,
+    ));
+    if (!points.length) return;
     const fragment = document.createDocumentFragment();
-    for (const [index, { x, y, z }] of points.entries()) {
+    for (const glyph of points) {
       const node = document.createElement("span");
       node.className = "particle";
-      node.textContent = marks[(index * 5 + Math.floor(index / 11)) % marks.length];
-      node.style.setProperty("--x", x.toFixed(6));
-      node.style.setProperty("--y", y.toFixed(6));
-      node.style.setProperty("--z", z.toFixed(6));
-      node.style.setProperty("--density", (0.62 + 0.38 * ((index * 19) % 31) / 30).toFixed(3));
+      node.textContent = glyph.letter;
+      node.style.setProperty("--x", glyph.x.toFixed(6));
+      node.style.setProperty("--y", glyph.y.toFixed(6));
+      node.style.setProperty("--z", glyph.z.toFixed(6));
+      node.style.setProperty("--density", glyph.density.toFixed(3));
       fragment.append(node);
     }
+    renderer?.setGlyphs(points);
     scene.replaceChildren(fragment);
     count.textContent = points.length + " characters";
     stage.setAttribute("data-points", "");
     fallback.hidden = true;
   } catch {
-    // The plain-text view preserves both readings on devices without text outlines.
+    // Keep the two plain-text views when a browser cannot sample outlines.
   }
 }
 
-function controls(value) {
-  const step = Math.round(value * 2) / 2;
+function syncAngle() {
+  const step = Math.round(angle * 2) / 2;
   if (Number(slider.value) !== step) slider.value = step;
   const signed = (step < 0 ? "−" : step > 0 ? "+" : "") + Math.abs(step).toFixed(1);
   if (degrees.textContent !== signed + "°") {
@@ -86,161 +148,409 @@ function controls(value) {
     slider.setAttribute("aria-valuetext", signed + " degrees");
   }
 
-  const side = step <= -45 ? "read" : step >= 45 ? "make" : "middle";
-  const label = side === "read" ? "First projection" : side === "make" ? "Second projection" : "Between projections";
+  const first = angle <= -limit;
+  const second = angle >= limit;
+  const side = first ? "read" : second ? "make" : "middle";
+  const label = first ? "First projection" : second ? "Second projection" : "Between projections";
   if (view.textContent !== label) view.textContent = label;
-  const line = side === "read" ? words[0] : side === "make" ? words[1] : words.join(" / ");
+  const line = first ? words[0] : second ? words[1] : words.join(" / ");
   if (reading.textContent !== line) reading.textContent = line;
   if (!fallback.hidden && fallback.textContent !== line) fallback.textContent = line;
-  const palette = step < 1 ? "read" : "make";
+  const palette = angle < 0 ? "read" : "make";
   if (stage.dataset.palette !== palette) stage.dataset.palette = palette;
   if (entrances.dataset.facing !== side) entrances.dataset.facing = side;
 
-  for (const button of buttons) {
-    const pressed = String(Number(button.dataset.pose) === step);
+  for (const button of poseButtons) {
+    const pressed = String(Number(button.dataset.pose) === angle);
     if (button.getAttribute("aria-pressed") !== pressed) button.setAttribute("aria-pressed", pressed);
   }
 }
 
-function camera(value) {
-  return {
-    "--yaw": value + "deg",
-    "--depth": 1 - Math.abs(value) / 45,
-    "--rotation-progress": (value + 45) / 90,
-  };
+function placeAngle(value) {
+  const next = clamp(value, -limit, limit);
+  if (next === angle) return;
+  angle = next;
+  stage.style.setProperty("--rotation-progress", (angle + limit) / (2 * limit));
+  syncAngle();
 }
 
-function setAngle(value) {
-  angle = Math.max(-45, Math.min(45, value));
-  for (const [property, formatted] of Object.entries(camera(angle))) stage.style.setProperty(property, formatted);
-  controls(angle);
+function placeScene() {
+  // The text nodes only need camera updates when their layer is visible.
+  if (sceneAngle === angle) return;
+  sceneAngle = angle;
+  stage.style.setProperty("--yaw", angle + "deg");
+  stage.style.setProperty("--depth", 1 - Math.abs(angle) / limit);
 }
 
-function onScreen() {
-  const value = parseFloat(getComputedStyle(stage).getPropertyValue("--yaw"));
-  return Number.isFinite(value) ? value : angle;
-}
-
-function stop() {
-  cancelAnimationFrame(frame);
-  frame = 0;
-  if (!animation) return;
-  const rendered = onScreen();
-  animation.cancel();
-  animation = undefined;
-  setAngle(rendered);
-}
-
-function animate(points, duration) {
-  stop();
-  const target = points.at(-1).value;
+function startTurn(path) {
   if (labMotion.matches) {
-    setAngle(target);
+    placeAngle(path.target);
+  } else {
+    rotation = { ...path, start: performance.now() };
+  }
+  queueFrame();
+}
+
+function resetEffects() {
+  rotation = undefined;
+  lens = { x: 0.5, y: 0.5, power: 0 };
+  lensTarget = undefined;
+  lensStart = undefined;
+  lastLensFrame = undefined;
+  strikes = [];
+  stillExposure = false;
+  historyOfAngles = [{ time: performance.now() - exposureLag, angle }];
+  lastTurn = -Infinity;
+}
+
+function recordAngle(now) {
+  if (historyOfAngles.at(-1)?.angle !== angle) lastTurn = now;
+  historyOfAngles.push({ time: now, angle });
+  while (historyOfAngles.length > 2 && historyOfAngles[1].time < now - exposureLag) historyOfAngles.shift();
+  return exposures(angle, lag => {
+    const time = now - lag;
+    const after = historyOfAngles.findIndex(record => record.time >= time);
+    if (after <= 0) return historyOfAngles[0].angle;
+    const previous = historyOfAngles[after - 1];
+    const next = historyOfAngles[after];
+    return mix(previous.angle, next.angle, (time - previous.time) / (next.time - previous.time));
+  });
+}
+
+function traceLayers(now) {
+  if (study !== "exposure") return [];
+  if (!labMotion.matches) return recordAngle(now);
+  if (!stillExposure) return [];
+  const other = angle > 0 ? -limit : limit;
+  return exposures(angle, lag => mix(angle, other, 0.82 * lag / exposureLag));
+}
+
+function paint(layers, inMotion = false) {
+  const warp = layers.lens?.power > 0.008 || layers.waves?.length > 0;
+  const trace = layers.ghosts?.length > 0;
+  const solid = warp || inMotion;
+  const available = renderer && fallback.hidden;
+  if (!available || !solid) placeScene();
+  if (!available || (!solid && !trace)) {
+    stage.removeAttribute("data-effects");
+    stage.removeAttribute("data-live-field");
     return;
   }
+  renderer.paint(angle, { ...layers, solid });
+  stage.toggleAttribute("data-live-field", solid);
+  const effect = warp ? "warp" : trace ? "trace" : "turn";
+  if (stage.dataset.effects !== effect) stage.dataset.effects = effect;
+}
 
-  const stops = [{ value: angle, offset: 0 }, ...points];
-  if (canAnimate) {
-    const next = stage.animate(stops.map(({ value, offset }) => ({
-      ...camera(value),
-      offset,
-      easing: "cubic-bezier(.24,.72,.2,1)",
-    })), { duration, fill: "both" });
-
-    animation = next;
-    next.onfinish = () => {
-      if (animation !== next) return;
-      stop();
-      setAngle(target);
-    };
-    function monitor() {
-      if (animation !== next) return;
-      controls(onScreen());
-      frame = requestAnimationFrame(monitor);
+function aimLens(now) {
+  if (lensStart !== undefined) {
+    const elapsed = now - lensStart;
+    if (elapsed < 1650) {
+      lens = lensPass(elapsed / 1650);
+      return true;
     }
-    frame = requestAnimationFrame(monitor);
+    lensStart = undefined;
+  }
+  const target = lensTarget ?? { ...lens, power: 0 };
+  const delta = clamp(now - (lastLensFrame ?? now - 16), 8, 55);
+  const weight = labMotion.matches ? 1 : 1 - Math.exp(-delta / 44);
+  lastLensFrame = now;
+  lens.x = mix(lens.x, target.x, weight);
+  lens.y = mix(lens.y, target.y, weight);
+  lens.power = mix(lens.power, target.power, weight);
+  return Math.abs(lens.x - target.x) + Math.abs(lens.y - target.y) + Math.abs(lens.power - target.power) > 0.005;
+}
+
+function render(now) {
+  frame = 0;
+  if (scoreOpen) {
+    if (scoreOrigin !== undefined) scorePosition = clamp(now - scoreOrigin, 0, scoreDuration);
+    const pose = scoreAt(scorePosition);
+    const inMotion = scoreOrigin !== undefined && pose.angle !== angle && scorePosition < scoreDuration;
+    placeAngle(pose.angle);
+    paint(pose, inMotion);
+    syncScoreTime(pose.title);
+    if (scorePosition === scoreDuration) {
+      scoreOrigin = undefined;
+      showScore();
+    }
+    if (scoreOrigin !== undefined) queueFrame();
     return;
   }
 
-  const started = performance.now();
-  function interpolate(time) {
-    const progress = Math.min(1, (time - started) / duration);
-    const index = stops.findIndex(item => item.offset >= progress && item.offset > 0);
-    const start = stops[index - 1];
-    const end = stops[index];
-    const part = Math.max(0, (progress - start.offset) / (end.offset - start.offset));
-    const eased = part * part * (3 - 2 * part);
-    setAngle(start.value + (end.value - start.value) * eased);
-    frame = progress < 1 ? requestAnimationFrame(interpolate) : 0;
+  if (rotation) {
+    const elapsed = now - rotation.start;
+    placeAngle(elapsed >= rotation.duration ? rotation.target : rotation.sample(Math.max(0, elapsed)));
+    if (elapsed >= rotation.duration) rotation = undefined;
   }
-  frame = requestAnimationFrame(interpolate);
+
+  const lensMoving = study === "lens" && aimLens(now);
+  if (study === "resonance" && !labMotion.matches) {
+    strikes = strikes.filter(strike => now - strike.time < waveDuration);
+  }
+  const waves = strikes.map(strike => ({ ...strike, age: labMotion.matches ? 275 : Math.max(0, now - strike.time) }));
+  const ghosts = traceLayers(now);
+  paint({ lens: study === "lens" && lens.power > 0.008 ? lens : undefined, waves, ghosts },
+    Boolean(rotation || gesture?.turning));
+  if (rotation || lensMoving || (!labMotion.matches && (waves.length > 0 || now - lastTurn < exposureLag + 30))) {
+    queueFrame();
+  }
 }
 
-function rotateTo(target) {
-  const start = animation ? onScreen() : angle;
-  const points = start * target < 0 ? [{ value: 0, offset: 0.47 }] : [];
-  animate([...points, { value: target, offset: 1 }], 1040);
+function queueFrame() {
+  if (!frame) frame = requestAnimationFrame(render);
 }
 
-function showWords() {
-  firstInput.value = words[0];
-  secondInput.value = words[1];
-  buttons[0].textContent = words[0] + " −45°";
-  buttons[1].textContent = words[1] + " +45°";
-  shape();
-  setAngle(angle);
+function showStudy() {
+  stage.dataset.study = study;
+  const available = Boolean(renderer && fallback.hidden);
+  for (const button of studyButtons) {
+    button.setAttribute("aria-pressed", String(!scoreOpen && button.dataset.study === study));
+    button.disabled = button.dataset.study !== "momentum" && !available;
+  }
+  const selected = studies[study];
+  studyHint.hidden = scoreOpen;
+  studyAction.hidden = scoreOpen;
+  if (!scoreOpen) {
+    studyHint.textContent = labMotion.matches ? selected.still : selected.hint;
+    studyAction.textContent = labMotion.matches ? selected.stillAction : selected.action;
+  }
+  playScore.hidden = !available;
 }
 
-function showMotion() {
+function showScore() {
+  scoreControls.hidden = !scoreOpen;
+  playScore.setAttribute("aria-expanded", String(scoreOpen));
+  if (labMotion.matches) {
+    playScore.textContent = scoreOpen ? "Reset score" : "Inspect motion score";
+  } else if (scoreOrigin !== undefined) {
+    playScore.textContent = "Pause score";
+  } else if (scoreOpen && scorePosition === scoreDuration) {
+    playScore.textContent = "Replay score";
+  } else {
+    playScore.textContent = scoreOpen ? "Resume score" : "Play motion score";
+  }
+}
+
+function syncScoreTime(title) {
+  const step = Math.round(scorePosition / 10) * 10;
+  const seconds = (step / 1000).toFixed(2);
+  const visible = title + " · " + seconds + " / " + (scoreDuration / 1000).toFixed(2) + " s";
+  if (Number(scoreTime.value) !== step) scoreTime.value = step;
+  if (scoreClock.textContent !== visible) {
+    scoreClock.textContent = visible;
+    scoreTime.setAttribute("aria-valuetext", seconds + " seconds, " + title);
+  }
+}
+
+function finishScore() {
+  if (!scoreOpen) return;
+  scoreOpen = false;
+  scoreOrigin = undefined;
+  resetEffects();
+  showScore();
+  showStudy();
+  queueFrame();
+}
+
+function pauseScore() {
+  if (scoreOrigin === undefined) return;
+  scoreOrigin = undefined;
+  showScore();
+  queueFrame();
+}
+
+function motionChoice() {
   motion.setAttribute("aria-pressed", String(labMotion.matches));
-  sweep.hidden = labMotion.matches;
-  if (labMotion.matches) stop();
+  if (labMotion.matches) {
+    pauseScore();
+    resetEffects();
+  }
+  showStudy();
+  showScore();
+  queueFrame();
+}
+
+function chooseStudy(next) {
+  finishScore();
+  study = next;
+  resetEffects();
+  showStudy();
+  queueFrame();
+}
+
+function strike(point) {
+  const mark = { ...point, time: performance.now() };
+  strikes = labMotion.matches ? [mark] : [...strikes.slice(-3), mark];
+  queueFrame();
+}
+
+function demonstrate() {
+  if (study === "lens") {
+    if (labMotion.matches) lensTarget = { x: 0.43, y: 0.48, power: 1 };
+    else lensStart = performance.now();
+  } else if (study === "resonance") {
+    strike({ x: 0.43, y: 0.52 });
+  } else if (study === "exposure") {
+    if (labMotion.matches) stillExposure = !stillExposure;
+    else startTurn(glide(angle, angle >= 0 ? -limit : limit, 1850));
+  } else {
+    const direction = angle >= 0 ? -1 : 1;
+    if (labMotion.matches) placeAngle(direction * limit);
+    else startTurn(carry(angle, direction * 0.57));
+  }
+  queueFrame();
+}
+
+function effectPosition(event) {
+  const rect = stage.getBoundingClientRect();
+  return { x: clamp((event.clientX - rect.left) / rect.width), y: clamp((event.clientY - rect.top) / rect.height) };
+}
+
+function trackPointer(samples, event) {
+  const batch = event.getCoalescedEvents?.() ?? [];
+  for (const point of batch.concat(event)) {
+    const sample = { x: point.clientX, time: point.timeStamp };
+    const previous = samples.at(-1);
+    if (previous && (sample.time < previous.time || (sample.time === previous.time && sample.x === previous.x))) continue;
+    samples.push(sample);
+  }
+  while (samples.length > 2 && samples[0].time < event.timeStamp - 88) samples.shift();
+}
+
+function release(event) {
+  if (gesture?.id !== event.pointerId) return;
+  const { samples, startX, startY, kind, angleScale, turning } = gesture;
+  gesture = undefined;
+  stage.removeAttribute("data-grab");
+  if (event.type === "pointerup") {
+    if (kind === "resonance" && Math.hypot(event.clientX - startX, event.clientY - startY) < 18) {
+      strike(effectPosition(event));
+    }
+    if (!labMotion.matches && turning) {
+      if (event.clientX !== samples.at(-1)?.x) trackPointer(samples, event);
+      const first = samples[0];
+      const last = samples.at(-1);
+      const pause = clamp((event.timeStamp - last.time - 40) / 120);
+      const speed = (last.x - first.x) * angleScale * (1 - pause) / Math.max(8, last.time - first.time);
+      if (Math.abs(speed) > 0.016) startTurn(carry(angle, speed));
+    }
+  }
+  if (turning) queueFrame();
+  if (kind === "lens" && event.pointerType !== "mouse" && !labMotion.matches) {
+    lensTarget = undefined;
+    queueFrame();
+  }
 }
 
 motion.addEventListener("click", () => labMotion.toggle());
-labMotion.addEventListener("change", showMotion);
+labMotion.addEventListener("change", motionChoice);
+for (const button of studyButtons) button.addEventListener("click", () => chooseStudy(button.dataset.study));
+studyAction.addEventListener("click", demonstrate);
 
-for (const button of buttons) {
-  button.addEventListener("click", () => rotateTo(Number(button.dataset.pose)));
+playScore.addEventListener("click", () => {
+  if (scoreOrigin !== undefined) {
+    pauseScore();
+    return;
+  }
+  if (!scoreOpen || labMotion.matches || scorePosition >= scoreDuration) scorePosition = 0;
+  scoreOpen = true;
+  resetEffects();
+  if (!labMotion.matches) scoreOrigin = performance.now() - scorePosition;
+  showScore();
+  showStudy();
+  queueFrame();
+});
+
+scoreClose.addEventListener("click", () => {
+  finishScore();
+  playScore.focus();
+});
+
+scoreTime.addEventListener("pointerdown", pauseScore);
+scoreTime.addEventListener("input", () => {
+  const chosen = Number(scoreTime.value);
+  pauseScore();
+  scorePosition = chosen;
+  showScore();
+  queueFrame();
+});
+
+for (const button of poseButtons) {
+  button.addEventListener("click", () => {
+    finishScore();
+    startTurn(glide(angle, Number(button.dataset.pose)));
+  });
 }
 
-sweep.addEventListener("click", () => animate([
-  { value: -45, offset: 0.19 },
-  { value: -45, offset: 0.27 },
-  { value: 0, offset: 0.55 },
-  { value: 45, offset: 1 },
-], 2900));
-
-slider.addEventListener("pointerdown", stop);
+slider.addEventListener("pointerdown", () => { rotation = undefined; });
 slider.addEventListener("input", () => {
   const value = Number(slider.value);
-  stop();
-  setAngle(value);
+  finishScore();
+  rotation = undefined;
+  placeAngle(value);
+  queueFrame();
 });
 
 stage.addEventListener("pointerdown", event => {
   if (!event.isPrimary || event.button !== 0) return;
-  stop();
-  drag = { id: event.pointerId, x: event.clientX, angle };
-  stage.setAttribute("data-grab", "");
+  finishScore();
+  rotation = undefined;
+  gesture = {
+    id: event.pointerId,
+    kind: study,
+    startX: event.clientX,
+    startY: event.clientY,
+    angle,
+    angleScale: 135 / bounds.width,
+    samples: [],
+  };
+  trackPointer(gesture.samples, event);
   stage.setPointerCapture(event.pointerId);
+  if (study === "lens") {
+    lensStart = undefined;
+    lensTarget = { ...effectPosition(event), power: 1 };
+    queueFrame();
+  } else if (study !== "resonance") {
+    stage.setAttribute("data-grab", "");
+  }
 });
 
 stage.addEventListener("pointermove", event => {
-  if (drag?.id !== event.pointerId) return;
-  const value = drag.angle + (event.clientX - drag.x) * 135 / stage.clientWidth;
-  setAngle(Math.round(value * 2) / 2);
+  if (scoreOpen) return;
+  if (study === "lens" && !labMotion.matches && (event.pointerType === "mouse" || gesture?.id === event.pointerId)) {
+    lensStart = undefined;
+    lensTarget = { ...effectPosition(event), power: 1 };
+    queueFrame();
+  }
+  if (gesture?.id !== event.pointerId || (gesture.kind !== "momentum" && gesture.kind !== "exposure")) return;
+  trackPointer(gesture.samples, event);
+  gesture.turning = true;
+  placeAngle(gesture.angle + (event.clientX - gesture.startX) * gesture.angleScale);
+  queueFrame();
 });
 
-function release(event) {
-  if (drag?.id !== event.pointerId) return;
-  drag = undefined;
-  stage.removeAttribute("data-grab");
-}
+stage.addEventListener("pointerleave", () => {
+  if (study !== "lens" || labMotion.matches) return;
+  lensTarget = undefined;
+  queueFrame();
+});
 
 stage.addEventListener("pointerup", release);
 stage.addEventListener("pointercancel", release);
 stage.addEventListener("lostpointercapture", release);
+
+function showWords() {
+  firstInput.value = words[0];
+  secondInput.value = words[1];
+  poseButtons[0].textContent = words[0] + " −45°";
+  poseButtons[1].textContent = words[1] + " +45°";
+  shape();
+  if (!fallback.hidden) study = "momentum";
+  syncAngle();
+  showStudy();
+  queueFrame();
+}
 
 form.addEventListener("submit", event => {
   event.preventDefault();
@@ -251,13 +561,14 @@ form.addEventListener("submit", event => {
     (invalid === 0 ? firstInput : secondInput).focus();
     return;
   }
-  stop();
+  finishScore();
   const url = new URL(location.href);
   url.searchParams.set("first", next[0]);
   url.searchParams.set("second", next[1]);
   history.replaceState(history.state, "", url);
   words = next;
-  angle = -45;
+  placeAngle(-limit);
+  resetEffects();
   showWords();
   message.textContent = "Projection built. This page’s address keeps both words.";
   stage.scrollIntoView({ block: "nearest" });
@@ -265,15 +576,21 @@ form.addEventListener("submit", event => {
 
 words = readingsFromAddress();
 fallback.textContent = words[0];
-size();
-new ResizeObserver(size).observe(stage);
+await Promise.allSettled([
+  document.fonts.load("900 128px Archivo"),
+  document.fonts.load('400 44px "IBM Plex Mono"'),
+]);
 try {
-  await document.fonts.load("900 128px Archivo");
+  renderer = createLetterField(document.querySelector("#effect-surface"));
 } catch {
-  // The outline can still be made with the browser’s fallback font.
+  // The DOM still renders both unwarped projections.
 }
+measure();
+new ResizeObserver(measure).observe(stage);
+resetEffects();
 showWords();
-showMotion();
+motionChoice();
 motion.hidden = false;
 document.querySelector("#exhibit-controls").hidden = false;
+document.querySelector("#motion-controls").hidden = false;
 document.querySelector("#change-words").hidden = false;
