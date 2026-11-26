@@ -1,23 +1,74 @@
 import { labMotion } from "../lab/motion.js";
+import { clamp, mix } from "./kinetics.js";
 
 const root = document.documentElement;
 const masthead = document.querySelector(".masthead");
-const sections = [...document.querySelectorAll("[data-chapter]")];
-const links = [...masthead.querySelectorAll("[data-section]")];
+const index = masthead.querySelector("nav");
+const links = [...index.querySelectorAll("[data-section]")];
+const studio = document.querySelector('[data-chapter="studio"]');
+const lab = document.querySelector("#lab");
 const fold = document.querySelector("#type-fold");
+const board = fold.querySelector(".fold-board");
+const leaves = document.querySelector("#fold-leaves");
+const foldControls = document.querySelector("#fold-controls");
+const foldPosition = document.querySelector("#fold-position");
+const foldPercent = document.querySelector("#fold-percent");
 const foldFirst = document.querySelector("#fold-first");
 const foldSecond = document.querySelector("#fold-second");
 const exhibit = document.querySelector("#exhibit");
 const sourceWord = document.querySelector("#first-word");
 const projectionWord = document.querySelector("#exhibit-reading");
 const openingHash = location.hash;
-const canUseNativeFold = "registerProperty" in CSS && CSS.supports("animation-timeline: view()")
-  && CSS.supports("animation-range: entry 12% cover 58%");
+const canUseNativeFold = "registerProperty" in CSS && CSS.supports("animation-timeline: scroll(root block)")
+  && CSS.supports("animation-range: 10px 20px");
+const leafCount = 9;
 
 let frame = 0;
 let current;
 let recast;
 let revision = 0;
+let turnStart = 0;
+let turnDistance = 0;
+let indexPositions;
+
+function foldWords() {
+  const fragment = document.createDocumentFragment();
+  leaves.style.setProperty("--leaf-count", leafCount);
+
+  function plane(orientation) {
+    const side = document.createElement("div");
+    side.className = "fold-plane fold-" + orientation;
+    const word = document.createElement("span");
+    word.className = "fold-word";
+    word.textContent = orientation === "departure" ? foldFirst.textContent : foldSecond.textContent;
+    side.append(word);
+    return side;
+  }
+
+  for (let position = 0; position < leafCount; position += 1) {
+    const leaf = document.createElement("div");
+    leaf.className = "fold-leaf";
+    leaf.style.setProperty("--leaf-index", position);
+    const hinge = document.createElement("div");
+    hinge.className = "fold-hinge";
+    hinge.append(plane("departure"), plane("arrival"));
+    leaf.append(hinge);
+    fragment.append(leaf);
+  }
+  leaves.append(fragment);
+  return [leaves.querySelectorAll(".fold-departure span"), leaves.querySelectorAll(".fold-arrival span")];
+}
+
+const letters = foldWords();
+
+function moveIndex(position) {
+  const base = Math.floor(position);
+  const from = indexPositions[base];
+  const to = indexPositions[Math.min(base + 1, indexPositions.length - 1)];
+  const amount = position - base;
+  index.style.setProperty("--index-left", mix(from.left, to.left, amount) + "px");
+  index.style.setProperty("--index-width", mix(from.width, to.width, amount) + "px");
+}
 
 function refresh() {
   frame = 0;
@@ -25,31 +76,34 @@ function refresh() {
   const headerHeight = masthead.offsetHeight;
   const activationLine = Math.max(headerHeight + 25, height * 0.24);
   const end = root.scrollHeight - height;
-  let active = sections[0];
+  const scroll = window.scrollY;
+  const progress = turnDistance ? clamp((scroll - turnStart) / turnDistance) : 1;
+  const labTop = lab.getBoundingClientRect().top;
+  const studioActive = turnDistance ? progress >= 0.5 : studio.getBoundingClientRect().top <= activationLine;
+  const labActive = labTop <= activationLine || (end > 0 && scroll >= end - 2);
+  const active = labActive ? 2 : studioActive ? 1 : 0;
 
-  for (const section of sections) {
-    if (section.getBoundingClientRect().top <= activationLine) active = section;
-  }
-  if (end > 0 && window.scrollY >= end - 2) active = sections.at(-1);
   if (active !== current) {
     current = active;
-    const key = active.dataset.chapter;
-    masthead.dataset.current = key;
-    for (const link of links) {
-      if (link.dataset.section === key) link.setAttribute("aria-current", "location");
+    masthead.dataset.current = links[active].dataset.section;
+    for (const [position, link] of links.entries()) {
+      if (position === active) link.setAttribute("aria-current", "location");
       else link.removeAttribute("aria-current");
     }
   }
 
-  masthead.style.setProperty("--page-progress", end > 0 ? Math.max(0, Math.min(1, window.scrollY / end)) : 0);
+  masthead.style.setProperty("--page-progress", end > 0 ? clamp(scroll / end) : 0);
 
-  if (!canUseNativeFold && !labMotion.matches) {
-    const rect = fold.getBoundingClientRect();
-    const start = height - Math.min(height, rect.height) * 0.12;
-    const finish = height - (height + rect.height) * 0.58;
-    fold.style.setProperty("--fold", Math.max(0, Math.min(1, (start - rect.top) / (start - finish))));
-  } else {
-    fold.style.removeProperty("--fold");
+  const labApproach = clamp((height - labTop) / Math.max(1, height - activationLine));
+  moveIndex(turnDistance ? progress + labApproach : active);
+
+  if (turnDistance) {
+    if (!canUseNativeFold) fold.style.setProperty("--fold", progress);
+    const value = Math.round(progress * 100);
+    const label = value === 0 ? "Exhibit side" : value === 100 ? "Studio side" : value + " percent turned";
+    if (Number(foldPosition.value) !== value) foldPosition.value = value;
+    if (foldPercent.value !== value + "%") foldPercent.value = value + "%";
+    if (foldPosition.getAttribute("aria-valuetext") !== label) foldPosition.setAttribute("aria-valuetext", label);
   }
 }
 
@@ -57,34 +111,55 @@ function schedule() {
   if (!frame) frame = requestAnimationFrame(refresh);
 }
 
-function measureHeader() {
-  root.style.setProperty("--masthead-space", (masthead.offsetHeight + 14) + "px");
+function measure() {
+  const headerHeight = masthead.offsetHeight;
+  root.style.setProperty("--masthead-edge", headerHeight + "px");
+  root.style.setProperty("--masthead-space", (headerHeight + 14) + "px");
+  turnStart = Math.round(window.scrollY + fold.getBoundingClientRect().top - headerHeight);
+  turnDistance = fold.offsetHeight - board.offsetHeight;
+  fold.style.setProperty("--turn-start", turnStart + "px");
+  fold.style.setProperty("--turn-end", (turnStart + turnDistance) + "px");
+  indexPositions = links.map(link => ({ left: link.offsetLeft, width: link.offsetWidth }));
   schedule();
 }
 
+function updateMotion() {
+  const enabled = !labMotion.matches;
+  fold.toggleAttribute("data-turn", enabled);
+  foldControls.hidden = !enabled;
+  if (!enabled) {
+    fold.style.removeProperty("--fold");
+    recast?.skipTransition();
+  }
+  measure();
+}
+
 fold.toggleAttribute("data-native", canUseNativeFold);
+foldPosition.addEventListener("input", () => {
+  window.scrollTo({ top: turnStart + Number(foldPosition.value) / 100 * turnDistance, behavior: "instant" });
+  schedule();
+});
 document.addEventListener("click", event => {
   if (event.target.closest?.("a[href^='#']:not(.skip)")) root.setAttribute("data-anchor-motion", "");
 });
 window.addEventListener("scroll", schedule, { passive: true });
-window.addEventListener("resize", schedule, { passive: true });
-window.addEventListener("pageshow", schedule);
-const headerObserver = new ResizeObserver(measureHeader);
-headerObserver.observe(masthead);
-new ResizeObserver(schedule).observe(document.querySelector("main"));
-labMotion.addEventListener("change", () => {
-  if (labMotion.matches) recast?.skipTransition();
-  schedule();
-});
-measureHeader();
+window.addEventListener("resize", measure, { passive: true });
+window.addEventListener("pageshow", measure);
+const sizeObserver = new ResizeObserver(measure);
+sizeObserver.observe(masthead);
+sizeObserver.observe(document.querySelector("main"));
+labMotion.addEventListener("change", updateMotion);
+updateMotion();
 
 export function writeFold(words) {
   foldFirst.textContent = words[0];
   foldSecond.textContent = words[1];
+  letters.forEach((faces, index) => faces.forEach(face => { face.textContent = words[index]; }));
   fold.toggleAttribute("data-long", Math.max(words[0].length, words[1].length) > 4);
 }
 
 export function alignOpeningAnchor() {
+  measure();
   if (!openingHash || location.hash !== openingHash || root.hasAttribute("data-anchor-motion")) return;
   // The controls above the target gain height when the sculpture is ready.
   const target = document.getElementById(openingHash.slice(1));

@@ -109,11 +109,11 @@ async function build() {
     const makeFrame = (index, name, color) => frame(sheet, label + " / " + name,
       index * (width + 94), top, width, height, color);
     const exhibit = makeFrame(0, "Exhibit", colors.paper);
-    const fold = makeFrame(1, "Fold between sections", colors.studio);
-    const studio = makeFrame(2, "Studio", colors.studio);
-    const recast = makeFrame(3, "Projection returned", colors.paper);
-    const lab = makeFrame(4, "Lab entrance", colors.plum);
-    const catalog = makeFrame(5, "Lab index", colors.paper);
+    const faces = ["Exhibit face", "Half turn", "Studio face"].map((name, index) => makeFrame(index + 1, name, colors.studio));
+    const studio = makeFrame(4, "Studio", colors.studio);
+    const recast = makeFrame(5, "Projection returned", colors.paper);
+    const lab = makeFrame(6, "Lab entrance", colors.plum);
+    const catalog = makeFrame(7, "Lab index", colors.paper);
 
     function header(parent, selected) {
       const bar = frame(parent, "Section navigation", 0, 0, width, mobile ? 86 : 64, colors.paper);
@@ -127,43 +127,76 @@ async function build() {
       const progress = { Exhibit: 0.07, Studio: 0.59, Lab: 0.94 }[selected];
       box(bar, "Scroll progress", 0, bar.height - 2, width * progress, 2,
         selected === "Lab" ? colors.plum : colors.blue);
+      const active = ["Exhibit", "Studio", "Lab"].indexOf(selected);
+      box(bar, "Current chapter", x + active * 82, mobile ? 74 : 44, [53, 45, 24][active], 1, colors.blue);
     }
 
     function opening(parent, word, second) {
-      const top = mobile ? 103 : 106;
-      type(parent, "Title", "Two readings.", gutter, top, mobile ? 49 : 150, colors.ink);
-      type(parent, "Viewing instructions", "One cloud of characters. Two readable angles. Drag the type or choose a motion study below.",
-        mobile ? gutter : width - 300, mobile ? 174 : 143, mobile ? 16 : 19, colors.ink, "sans", mobile ? 275 : 235);
-      const plateY = mobile ? 272 : 294;
-      const plateHeight = mobile ? 294 : 437;
-      box(parent, "Projection plate", gutter, plateY, width - 2 * gutter, plateHeight, colors.blue);
-      type(parent, "Projection caption", "First projection", gutter + 16, plateY + 17, 12, colors.paper, "mono");
+      const top = mobile ? 109 : 148;
+      const plateX = mobile ? gutter : Math.round(width * 0.39);
+      const plateY = mobile ? 284 : top;
+      const plateHeight = mobile ? 282 : 511;
+      const plateWidth = width - plateX - gutter;
+      const title = type(parent, "Title", mobile ? "Two readings." : "Two\nreadings.", gutter, top + 14, mobile ? 46 : 106, colors.ink);
+      title.lineHeight = { unit: "PERCENT", value: 80 };
+      title.letterSpacing = { unit: "PERCENT", value: -6 };
+      type(parent, "Viewing instructions", "One cloud of characters. Two readable angles. Drag the type to turn it.",
+        gutter, mobile ? 176 : 377, mobile ? 16 : 20, colors.ink, "sans", mobile ? 266 : 249);
+      const turn = type(parent, "Turn the page", "Turn the page ↓", gutter, mobile ? 247 : 617, 14, colors.ink, "mono");
+      navigate(turn, faces[0]);
+      box(parent, "Projection plate", plateX, plateY, plateWidth, plateHeight, colors.blue);
+      type(parent, "Projection caption", "First projection", plateX + 16, plateY + 17, 12, colors.paper, "mono");
       const marks = type(parent, "Editable specimen", specimen(word), 0, 0,
-        mobile ? (word.length > 4 ? 6.5 : 10) : (word.length > 4 ? 23 : 31), colors.paper, "mono");
+        mobile ? (word.length > 4 ? 6.5 : 10) : (word.length > 4 ? 16 : 22), colors.paper, "mono");
       marks.lineHeight = { unit: "PERCENT", value: 80 };
-      marks.x = (width - marks.width) / 2;
+      marks.x = plateX + (plateWidth - marks.width) / 2;
       marks.y = plateY + (plateHeight - marks.height) / 2;
-      type(parent, "Projection word", word, gutter + 16, plateY + plateHeight - 34, 13, colors.paper, "mono");
+      type(parent, "Projection word", word, plateX + 16, plateY + plateHeight - 34, 13, colors.paper, "mono");
       type(parent, "Angle control", word + " −45°   ───────────   " + second + " +45°", gutter, plateY + plateHeight + 18,
         mobile ? 10 : 13, colors.ink, "mono");
       type(parent, "Motion studies", "Momentum   Lens   Resonance   Exposure", gutter, plateY + plateHeight + 55,
         mobile ? 11 : 13, colors.ink, "mono");
       const next = type(parent, "Make your own projection", "Make your own projection ↓", gutter, plateY + plateHeight + 106,
         mobile ? 17 : 21, colors.ink, "sans");
-      navigate(next, fold);
+      navigate(next, studio);
       header(parent, "Exhibit");
     }
 
     opening(exhibit, "READ", "MAKE");
     opening(recast, "ORIGIN", "FUTURE");
 
-    const crease = frame(fold, "Two papers at the fold", 0, mobile ? 180 : 218, width, mobile ? 303 : 465, colors.studio);
-    type(crease, "Incoming word", "MAKE", mobile ? 20 : 202, mobile ? 132 : 190, mobile ? 103 : 318, colors.lavender, "sans");
-    const departure = box(crease, "Outgoing paper", -50, -111, width + 120, mobile ? 260 : 336, colors.blue);
-    departure.rotation = 5;
-    type(crease, "Outgoing word", "READ", mobile ? 30 : 240, mobile ? 7 : -40, mobile ? 105 : 302, colors.paper, "sans");
-    navigate(type(fold, "Continue to Studio", "Continue to Studio ↓", gutter, mobile ? 537 : 737, 20, colors.lavender, "sans"), studio);
-    header(fold, "Studio");
+    faces.forEach((face, index) => {
+      const progress = [0, 0.53, 1][index];
+      const travelProgress = Math.max(0, Math.min(1, (progress - 0.02) / 0.96));
+      const artY = mobile ? 128 : 152;
+      const artHeight = mobile ? 220 : 497;
+      const crease = frame(face, "Fold", 0, artY, width, artHeight, "#15141e");
+      const stripWidth = width / 9;
+      for (let strip = 0; strip < 9; strip += 1) {
+        const turn = Math.max(0, Math.min(1, (travelProgress - strip / 16) * 2));
+        const back = turn >= 0.5;
+        const projected = stripWidth * Math.max(0.024, Math.abs(Math.cos(turn * Math.PI)));
+        const panel = frame(crease, "Panel " + (strip + 1), strip * stripWidth + (stripWidth - projected) / 2,
+          0, projected, artHeight, back ? "#222035" : colors.blue);
+        const ink = type(panel, "Word", back ? "MAKE" : "READ", 0, 0, mobile ? 80 : 300,
+          back ? colors.lavender : colors.paper, "sans");
+        ink.letterSpacing = { unit: "PERCENT", value: -8 };
+        ink.x = (width - ink.width) / 2 - strip * stripWidth - (stripWidth - projected) / 2;
+        ink.y = (artHeight - ink.height) / 2;
+      }
+      const y = artY + artHeight + 22;
+      const travel = width - 2 * gutter - 208;
+      const scrubber = frame(face, "Page fold control", gutter + 103, y - 6, travel, 42, colors.studio);
+      type(scrubber, "Page fold", "Page fold", 0, 0, 11, colors.white, "mono");
+      const percentage = type(scrubber, "Fold position", Math.round(progress * 100) + "%", 0, 0, 11, colors.white, "mono");
+      percentage.x = travel - percentage.width;
+      box(scrubber, "Track", 0, 29, travel, 1, colors.lavender);
+      box(scrubber, "Playhead", progress * (travel - 7), 25, 7, 9, colors.lavender);
+      navigate(scrubber, faces[(index + 1) % faces.length]);
+      navigate(type(face, "Exhibit plate", "Exhibit ↑", gutter, y, 13, colors.lavender, "mono"), exhibit);
+      navigate(type(face, "Studio workbench", "Studio ↓", width - gutter - 65, y, 13, colors.lavender, "mono"), studio);
+      header(face, progress >= 0.5 ? "Studio" : "Exhibit");
+    });
 
     const studioY = mobile ? 144 : 196;
     type(studio, "Studio title", mobile ? "Make the\nnext reading." : "Make the next\nreading.", gutter,

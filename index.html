@@ -8,10 +8,10 @@
   <title>Two readings · Typefield</title>
   <link rel="icon" href="data:,">
   <link rel="preload" href="fonts/archivo-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="exhibit/exhibit.css?v=3">
+  <link rel="stylesheet" href="exhibit/exhibit.css?v=4">
   <link rel="stylesheet" href="exhibit/passage.css">
   <script type="module" blocking="render" src="exhibit/passage.js"></script>
-  <script type="module" src="exhibit/exhibit.js?v=3"></script>
+  <script type="module" src="exhibit/exhibit.js?v=4"></script>
 </head>
 <body>
   <a class="skip" href="#exhibit-title">Skip to the exhibit</a>
@@ -30,21 +30,24 @@
 
   <main>
     <section class="opening shell" id="opening" data-chapter="exhibit" aria-labelledby="exhibit-title">
-      <header class="opening-title">
-        <h1 id="exhibit-title" tabindex="-1">Two readings<span>.</span></h1>
-        <p>One cloud of characters. Two readable angles. Drag the type or choose a motion study below.</p>
-      </header>
-      <div class="exhibit" id="exhibit" tabindex="-1" role="group" aria-label="A rotating cloud of text" aria-describedby="exhibit-reading">
-        <div class="exhibit-top micro">
-          <span id="exhibit-view">First projection</span>
-          <span id="exhibit-count"></span>
-        </div>
-        <canvas class="effect-surface" id="effect-surface" aria-hidden="true"></canvas>
-        <div class="exhibit-scene" id="exhibit-scene" aria-hidden="true"></div>
-        <p id="exhibit-fallback" aria-hidden="true">READ</p>
-        <div class="exhibit-bottom micro">
-          <span id="exhibit-reading" role="status">READ</span>
-          <span id="exhibit-angle" aria-hidden="true">−45.0°</span>
+      <div class="opening-cover">
+        <header class="opening-title">
+          <h1 id="exhibit-title" tabindex="-1">Two <span class="title-line">readings<span class="title-stop">.</span></span></h1>
+          <p>One cloud of characters. Two readable angles. Drag the type to turn it.</p>
+          <a class="turn-link" href="#type-fold">Turn the page <span aria-hidden="true">↓</span></a>
+        </header>
+        <div class="exhibit" id="exhibit" tabindex="-1" role="group" aria-label="A rotating cloud of text" aria-describedby="exhibit-reading">
+          <div class="exhibit-top micro">
+            <span id="exhibit-view">First projection</span>
+            <span id="exhibit-count"></span>
+          </div>
+          <canvas class="effect-surface" id="effect-surface" aria-hidden="true"></canvas>
+          <div class="exhibit-scene" id="exhibit-scene" aria-hidden="true"></div>
+          <p id="exhibit-fallback" aria-hidden="true">READ</p>
+          <div class="exhibit-bottom micro">
+            <span id="exhibit-reading" role="status">READ</span>
+            <span id="exhibit-angle" aria-hidden="true">−45.0°</span>
+          </div>
         </div>
       </div>
       <div class="exhibit-controls" id="exhibit-controls" hidden>
@@ -78,9 +81,21 @@
     </section>
 
     <section class="studio" data-chapter="studio" aria-labelledby="studio-title">
-      <div class="type-fold" id="type-fold" aria-hidden="true">
-        <div class="fold-plane fold-arrival"><span id="fold-second">MAKE</span></div>
-        <div class="fold-plane fold-departure"><span id="fold-first">READ</span></div>
+      <div class="type-fold" id="type-fold" role="region" aria-label="Exhibit to Studio" tabindex="-1">
+        <div class="fold-board">
+          <div class="fold-art" aria-hidden="true">
+            <div class="fold-still"><span id="fold-first" hidden>READ</span><span id="fold-second">MAKE</span></div>
+            <div class="fold-leaves" id="fold-leaves"></div>
+          </div>
+          <div class="fold-controls shell" id="fold-controls" hidden>
+            <a href="#exhibit" aria-label="Exhibit plate">Exhibit <span aria-hidden="true">↑</span></a>
+            <div class="fold-track">
+              <div class="fold-scale micro"><label for="fold-position">Page fold</label><output id="fold-percent" aria-hidden="true">0%</output></div>
+              <input id="fold-position" type="range" min="0" max="100" value="0" aria-valuetext="Exhibit side">
+            </div>
+            <a href="#studio" aria-label="Studio workbench">Studio <span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
       </div>
       <div class="shell studio-inner" id="studio" tabindex="-1">
         <header>
